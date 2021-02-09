@@ -70,7 +70,7 @@ $dat = $abc->fetch();
               <span>Welcome,</span>
 
               <h2><?php
-                  echo $dat['a_position'];
+                  echo $dat['a_fullname'];
                   ?></h2>
             </div>
           </div>
