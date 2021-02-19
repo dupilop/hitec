@@ -34,58 +34,61 @@ require('../db/connect.php');
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align">Full Name<span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <input class="form-control" id="s_fullname" name="s_fullname" required="required" placeholder="Enter full name" />
+                                <input class="form-control" id="a_fullname" name="a_fullname" required="required" placeholder="Enter full name" />
                             </div>
-                            <div class="s_fullname"></div>
+                            <div class="a_fullname"></div>
                         </div>
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align">Date of Birth<span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <input class="form-control" id="s_dob" class='date' type="date" name="s_dob" required='required'>
+                                <input class="form-control" id="a_dob" class='date' type="date" name="a_dob" required='required'>
                             </div>
-                            <div class="s_dob"></div>
+                            <div class="a_dob"></div>
                         </div>
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align">Position<span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <input class="form-control" id="s_position" class='optional' name="s_position" type="text" />
+                                <input class="form-control" id="a_position" class='optional' name="a_position" type="text" />
                             </div>
-                            <div class="s_position"></div>
+                            <div class="a_position"></div>
                         </div>
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align"> Mobile Number<span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <input class="form-control" id="s_mobile" type="number" class='number' name="s_mobile" required='required'>
+                                <input class="form-control" id="a_mobile" type="number" class='number' name="a_mobile" required='required'>
                             </div>
-                            <div class="s_mobile"></div>
+                            <div class="a_mobile"></div>
                         </div>
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align">Phone Number<span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <input class="form-control" id="s_phone" type="number" class='number' name="s_phone" required='required'>
+                                <input class="form-control" id="a_phone" type="number" class='number' name="a_phone" required='required'>
                             </div>
-                            <div class="s_phone"></div>
+                            <div class="a_phone"></div>
                         </div>
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align">Gender <span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <input class="form-control" id="s_gender" type="text" class='number' name="s_gender">
+                                <input class="form-control" id="a_gender" type="text" class='number' name="a_gender">
                             </div>
-                            <div class="s_gender"></div>
+                            <div class="a_gender"></div>
                         </div>
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align">Address<span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <textarea required="required" id="s_address" name='s_address'></textarea>
+                                <textarea required="required" id="a_address" name='a_address'></textarea>
                             </div>
-                            <div class="s_address"></div>
+                            <div class="a_address"></div>
                         </div>
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align">Assigned To<span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <select class="form-control" name="s_a_id">
+                                <select class="form-control select2" name="ras_a_id">
                                     <?php
-                                    $rr = $pdo->query("SELECT * FROM admins");
+                                    $rr = $pdo->prepare("SELECT * FROM admins a
+                                    INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id
+                                    INNER JOIN roles r ON r.r_id=ra.ras_r_id WHERE r.r_name=:r_name");
+                                    $rr->execute(['r_name' => 'admin']);
                                     foreach ($rr as $vv) {
                                         echo '<option value="' . $vv['a_id'] . '">' . $vv['a_fullname'] . '</option>';
                                     }
@@ -99,14 +102,14 @@ require('../db/connect.php');
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align">email<span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <input class="form-control" id="s_email" name="s_email" class='email' required="required" type="email" />
+                                <input class="form-control" id="a_email" name="a_email" class='email' required="required" type="email" />
                             </div>
-                            <div class="s_email"></div>
+                            <div class="a_email"></div>
                         </div>
                         <div class="field item form-group">
                             <label class="col-form-label col-md-3 col-sm-3  label-align">Password<span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6">
-                                <input class="form-control" type="password" id="password1" name="s_password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}" title="Minimum 8 Characters Including An Upper And Lower Case Letter, A Number And A Unique Character" required />
+                                <input class="form-control" type="password" id="password1" name="a_password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}" title="Minimum 8 Characters Including An Upper And Lower Case Letter, A Number And A Unique Character" required />
 
                                 <span style="position: absolute;right:15px;top:7px;" onclick="hideshow()">
                                     <i id="slash" class="fa fa-eye-slash"></i>
@@ -138,8 +141,6 @@ require('../db/connect.php');
         </div>
     </div>
 </div>
-<script src="../vendors/validator/multifield.js"></script>
-<script src="../vendors/validator/validator.js"></script>
 <script>
     function hideshow() {
         var password = document.getElementById("password1");
@@ -167,6 +168,7 @@ require('../db/connect.php');
     load_data();
 
     function load_data() {
+        $("#user_data").html('<i class="fa fa-spinner fa-spin fa-2x">');
         $.ajax({
             url: "other_controller/viewstaffaccount.php",
             method: "POST",
@@ -177,14 +179,14 @@ require('../db/connect.php');
     }
     $(document).on('submit', '#form1', function(e) {
         e.preventDefault();
-        var s_fullname = $("#s_fullname").val();
-        var s_dob = $("#s_dob").val();
-        var s_position = $("#s_position").val();
-        var s_mobile = $("#s_mobile").val();
-        var s_phone = $("#s_phone").val();
-        var s_gender = $("#s_gender").val();
-        var s_address = $("#s_address").val();
-        var s_email = $("#s_email").val();
+        var a_fullname = $("#a_fullname").val();
+        var a_dob = $("#a_dob").val();
+        var a_position = $("#a_position").val();
+        var a_mobile = $("#a_mobile").val();
+        var a_phone = $("#a_phone").val();
+        var a_gender = $("#a_gender").val();
+        var a_address = $("#a_address").val();
+        var a_email = $("#a_email").val();
         var password1 = $("#password1").val();
         var cpassword = $("#cpassword").val();
         var fvalidation = false;
@@ -198,57 +200,57 @@ require('../db/connect.php');
         var p1validation = false;
         var cpvalidation = false;
 
-        if ($.trim(s_fullname) == '') {
-            $(".s_fullname").html("<p class='text text-danger'>Fullname is empty</p>");
+        if ($.trim(a_fullname) == '') {
+            $(".a_fullname").html("<p class='text text-danger'>Fullname is empty</p>");
         } else {
-            $(".s_fullname").html("<p class='text text-success'></p>");
+            $(".a_fullname").html("<p class='text text-success'></p>");
             fvalidation = true;
         }
-        if ($.trim(s_dob) == '') {
-            $(".s_dob").html("<p class='text text-danger'>DOB is empty</p>");
+        if ($.trim(a_dob) == '') {
+            $(".a_dob").html("<p class='text text-danger'>DOB is empty</p>");
         } else {
-            $(".s_dob").html("<p class='text text-success'></p>");
+            $(".a_dob").html("<p class='text text-success'></p>");
             dvalidation = true;
         }
-        if ($.trim(s_position) == '') {
-            $(".s_position").html("<p class='text text-danger'>Position is empty</p>");
+        if ($.trim(a_position) == '') {
+            $(".a_position").html("<p class='text text-danger'>Position is empty</p>");
         } else {
-            $(".s_position").html("<p class='text text-success'></p>");
+            $(".a_position").html("<p class='text text-success'></p>");
             povalidation = true;
         }
-        if ($.trim(s_mobile) == '') {
-            $(".s_mobile").html("<p class='text text-danger'>Mobile no is empty</p>");
+        if ($.trim(a_mobile) == '') {
+            $(".a_mobile").html("<p class='text text-danger'>Mobile no is empty</p>");
         } else {
-            $(".s_mobile").html("<p class='text text-success'></p>");
+            $(".a_mobile").html("<p class='text text-success'></p>");
             mvalidation = true;
         }
-        if ($.trim(s_phone) == '') {
-            $(".s_phone").html("<p class='text text-danger'>Phone is empty</p>");
+        if ($.trim(a_phone) == '') {
+            $(".a_phone").html("<p class='text text-danger'>Phone is empty</p>");
         } else {
-            $(".s_phone").html("<p class='text text-success'></p>");
+            $(".a_phone").html("<p class='text text-success'></p>");
             phvalidation = true;
         }
-        if ($.trim(s_gender) == '') {
-            $(".s_gender").html("<p class='text text-danger'>Gender is empty</p>");
+        if ($.trim(a_gender) == '') {
+            $(".a_gender").html("<p class='text text-danger'>Gender is empty</p>");
         } else {
-            $(".s_gender").html("<p class='text text-success'></p>");
+            $(".a_gender").html("<p class='text text-success'></p>");
             gvalidation = true;
         }
-        if ($.trim(s_address) == '') {
-            $(".s_address").html("<p class='text text-danger'>Address is empty</p>");
+        if ($.trim(a_address) == '') {
+            $(".a_address").html("<p class='text text-danger'>Address is empty</p>");
         } else {
-            $(".s_address").html("<p class='text text-success'></p>");
+            $(".a_address").html("<p class='text text-success'></p>");
             advalidation = true;
         }
 
-        if (!validateEmail(s_email)) {
+        if (!validateEmail(a_email)) {
 
-            $(".s_email").html("<p class='text text-danger'>Email is invalid</p>");
+            $(".a_email").html("<p class='text text-danger'>Email is invalid</p>");
         } else {
-            if ($.trim(s_email) == '') {
-                $(".s_email").html("<p class='text text-danger'>Email is invalid</p>");
+            if ($.trim(a_email) == '') {
+                $(".a_email").html("<p class='text text-danger'>Email is invalid</p>");
             } else {
-                $(".s_email").html("<p class='text text-success'>Looks Good!</p>");
+                $(".a_email").html("<p class='text text-success'>Looks Good!</p>");
                 evalidation = true;
             }
         }
@@ -322,28 +324,4 @@ require('../db/connect.php');
 
         );
     });
-    //  $(document).on('click', '.update', function(){
-
-    //   var id = $(this).attr('id');
-    //  var data = 'id=' + id;
-    //   $.ajax({
-    //                   type: "POST",
-    //                   url: "other_controller/updateadmin.php?s_id="+id,
-    //                   data: new FormData(document.getElementById("form2")),
-    //                   contentType: false, 
-    //                   processData: false,
-    //                   success: function(data) {
-    //                       alert(data);
-    //                       load_data();
-    //                        $("#myModal"+id).modal("toggle");
-
-    //                      new PNotify({
-    //                                 title: 'Updating Successful',
-    //                                 type: 'success',
-    //                                 styling: 'bootstrap3'
-    //                             });
-    //                   }
-    //               });
-
-    // });
 </script>

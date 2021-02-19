@@ -1,6 +1,4 @@
 <?php 
-require "../../db/connect.php";  //include the DB config file
-require '../../classes/databasetable.php';
 $did = $_GET['cbid'];
 $abc = new DatabaseTable('loan_transactions');
 $abc2 = new DatabaseTable('loans');
@@ -18,3 +16,6 @@ $c1 = [
 
 $up1 = $abc2->update($c1, 'l_id');
 $del1 = $abc->delete('lt_id', $did);
+header('Location: paymentrollback');
+
+?>

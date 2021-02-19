@@ -11,15 +11,14 @@ session_start();
 	}
 
 	if(isset($_GET['page'])){
-		require '../pages/' . $_GET['page'] . '.php';
+		require 'pages/' . $_GET['page'] . '.php';
 	}
 	else{
-		require '../pages/index.php';
+		require 'pages/index.php';
 	}
 
 	$tempVars = [
 		'title' => $title,
 		'content' => $content
 	];
-	echo loadTemplate('../templates/layout.php', $tempVars);
-?>
+	echo loadTemplate('templates/layout.php', $tempVars);

@@ -1,6 +1,4 @@
 <?php 
-require "../../db/connect.php";  //include the DB config file
-require '../../classes/databasetable.php';
 $did = $_GET['ms_id'];
 $abc = new DatabaseTable('masiksavings');
 $abc2 = new DatabaseTable('customers');
@@ -18,3 +16,6 @@ $c1 = [
 
 $up1 = $abc2->update($c1, 'c_id');
 $del1 = $abc->delete('ms_id', $did);
+header('Location: masiksavingscheckup');
+
+?>

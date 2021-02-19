@@ -70,7 +70,6 @@ $userid = $_SESSION['id'];
                             <div class="form-group">
                                 <div class="col-md-6 offset-md-3">
                                     <input type="hidden" readonly name="st_created_by" value="<?php echo $userid;  ?>">
-                                    <input type="hidden" readonly name="st_created_by_type" value="superadmin">
                                     <button type='submit' id="add" name="add" class="btn btn-primary add">Add</button>
                                     <button type='reset' class="btn btn-success">Reset</button>
                                 </div>

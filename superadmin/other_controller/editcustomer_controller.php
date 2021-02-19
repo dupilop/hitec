@@ -5,6 +5,7 @@ $abc = new DatabaseTable('customers');
 
 if (isset($_POST['action'])) {
     unset($_POST['action']);
+    print_r($_POST);
     if (isset($_FILES)) {
         $valid_extensions = array('jpeg', 'jpg', 'png', 'gif', 'bmp', 'pdf', 'doc', 'ppt');
         $img1 = $_FILES['c_photo']['name'];

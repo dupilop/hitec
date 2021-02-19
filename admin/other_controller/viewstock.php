@@ -93,7 +93,7 @@
                   <thead class="thead-dark">
                     <tr>
                       <th>Description</th>
-                      <th>Model No</th>
+                      <th>Model no</th>
                       <th>Price</th>
                       <th>Date of Purchase</th>
                       

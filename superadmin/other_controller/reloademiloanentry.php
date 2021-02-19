@@ -20,8 +20,7 @@ require('../../db/connect.php');
 
 
 <?php
-$asd = $pdo->query("SELECT * FROM customers c 
-                    LEFT JOIN loans l ON c.c_id=l.l_c_id 
+$asd = $pdo->query("SELECT * FROM customers 
                     ");
 echo '<table class="table table-bordered table-striped table-hover table-sm display nowrap" id="example" name="example" width="100%" cellspacing="0">';
 
@@ -48,6 +47,10 @@ echo '<thead class="thead-dark">
 
 
 foreach ($asd as $a) {
+  $cu1 = $pdo->prepare("SELECT SUM(l_remaining_loan) FROM loans WHERE l_c_id=:cid AND l_status=:lstatus");
+  $cu1->execute(['cid' => $a['c_id'], 'lstatus' => 'unpaid']);
+  $cu2 = $cu1->fetch();
+
   echo '<tr>';
   if ($a['c_photo'] != '') {
     echo '<td><a href="../images/customers/' . $a['c_photo'] . '"><img style="border-radius: 50%;" height="50px" width="50px" src="../images/customers/' . $a['c_photo'] . '"></a></td>';
@@ -61,16 +64,10 @@ foreach ($asd as $a) {
   echo '<td id="mob' . $a['c_id'] . '">' . $a['c_mobile'] . '</td>';
   echo '<td id="ema' . $a['c_id'] . '">' . $a['c_email'] . '</td>';
   echo '<td id="off' . $a['c_id'] . '">' . $a['c_office'] . '</td>';
-  $lcid = $a['l_c_id'];
+  $lcid = $a['c_id'];
 
-  $rr = $pdo->prepare("SELECT * FROM loans WHERE l_c_id ='$lcid' && l_status='unpaid'");
-  $rr->execute();
-  $result = $rr->fetchAll();
-  $total_row = $rr->rowCount();
-  if ($total_row > 0) {
-    echo '<td><button type="button" class="btn btn-danger btn-sm btn-success"><i class="fa fa-refresh"></i></button></td>';
-  } else {
-    echo '<td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#mod' . $a['c_id'] . '"><i class="fa fa-plus"></i></button>
+
+  echo '<td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#mod' . $a['c_id'] . '"><i class="fa fa-plus"></i></button>
                       
                       
 
@@ -89,28 +86,44 @@ foreach ($asd as $a) {
                                             <label class="col-form-label col-md-4 col-sm-3  label-align">Description<span class="required">*</span></label>
                                             <div class="col-md-6 col-sm-6">
                                              
-                                                <input class="form-control title"  type="text" name="l_title" required="required" />
+                                                <input class="form-control title"  type="text" name="l_title" />
                                             </div>
                                             <div class="titleerror"></div>
                                         </div>
                                         <div class="field item form-group">
                                             <label class="col-form-label col-md-4 col-sm-3  label-align">Loan Amount<span class="required">*</span></label>
                                             <div class="col-md-6 col-sm-6">
-                                                <input class="form-control amount" name="l_amount" type="number" required="required" />
+                                                <input class="form-control amount" onkeypress="return onlyNumberKey(event)" pattern="^\d*(\.\d{0,2})?$" name="l_amount" type="text" />
                                             </div>
                                             <div class="amounterror"></div>
                                         </div>
                                         <div class="field item form-group">
                                             <label class="col-form-label col-md-4 col-sm-3  label-align">Down Payment<span class="required">*</span></label>
                                             <div class="col-md-6 col-sm-6">
-                                                <input class="form-control dpayment" name="l_down_payment" type="number" required="required" />
+                                                <input class="form-control dpayment" onkeypress="return onlyNumberKey(event)" name="l_down_payment" type="text" />
                                             </div>
                                             <div class="dpaymenterror"></div>
                                         </div>
                                         <div class="field item form-group">
                                             <label class="col-form-label col-md-4 col-sm-3  label-align">Loan Period (in mth)<span class="required">*</span></label>
                                             <div class="col-md-6 col-sm-6">
-                                                <input class="form-control lperiod" onkeypress="return onlyNumberKey(event)" name="l_period" type="text" maxlength="2" required="required" />
+                                                <input class="form-control lperiod" onkeypress="return onlyNumberKey(event)" name="l_period" type="text" maxlength="2"  />
+                                            </div>
+                                            <div class="lperioderror"></div>
+                                        </div>
+                                        <div class="field item form-group">
+                                            <label class="col-form-label col-md-4 col-sm-3  label-align">Credit Limitations<span class="required">*</span></label>
+                                            <div class="col-md-6 col-sm-6">';
+  $clim = $a['c_limitations'] - $cu2[0];
+  echo '<input class="form-control-plaintext llimit" readonly onkeypress="return onlyNumberKey(event)" value="' . $clim . '" type="text" />';
+  echo '</div>
+                                            <div class="lperioderror"></div>
+                                        </div>
+                                        
+                                        <div class="field item form-group">
+                                            <label class="col-form-label col-md-4 col-sm-3  label-align">Remaining Limitations<span class="required">*</span></label>
+                                            <div class="col-md-6 col-sm-6">
+                                                <input class="form-control-plaintext rlimit" onkeypress="return onlyNumberKey(event)" value="0.00" type="text" />
                                             </div>
                                             <div class="lperioderror"></div>
                                         </div>
@@ -125,7 +138,7 @@ foreach ($asd as $a) {
                     </div>
                   </div>
                   </td>';
-  }
+
   echo '</tr>';
 }
 
@@ -133,9 +146,7 @@ foreach ($asd as $a) {
 echo '</tbody>
                 </table>';
 ?>
-<script>
-  // $(".lperiod").attr("maxlength", "14");
-
+<script type="text/javascript">
   function onlyNumberKey(evt) {
 
     // Only ASCII charactar in that range allowed 

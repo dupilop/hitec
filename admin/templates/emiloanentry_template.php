@@ -12,11 +12,32 @@
       data: {},
       success: function(data) {
         $('#reloadentry').html(data);
-
       }
     });
   }
-
+  $(document).on("keyup", ".amount", function(e) {
+    e.preventDefault();
+    var lamt = parseFloat($(this).val());
+    $(this).val(lamt);
+    var climit = $.trim($(this).parent().parent().parent().find(".llimit").val());
+    // alert(climit);
+    // alert(lamt);
+    // $(".rlimit").val(rlimit);
+    if(isNaN(lamt)){
+      $(this).val(0);
+      var rlimit = climit;
+      $(".rlimit").val(rlimit);
+    }else{
+    if (lamt > climit) {
+      $(this).val(climit);
+      // alert('asd');
+      $(".rlimit").val(0);
+    } else {
+      var rlimit = climit - lamt;
+      $(".rlimit").val(rlimit);
+    }
+    }
+  });
   $(document).on("click", ".submitloanentry", function(e) {
     e.preventDefault();
     // alert($(this).parent().parent().html());
@@ -24,10 +45,12 @@
 
     var amount = $(this).parent().parent().find(".amount").val();
     var dpayment = $(this).parent().parent().find(".dpayment").val();
+    var lperiod = $(this).parent().parent().find(".lperiod").val();
     var l_c_id = $(this).parent().parent().find(".l_c_id").val();
     var tvalidation = false;
     var avalidation = false;
     var dvalidation = false;
+    var lvalidation = false;
     if ($.trim(title) == '') {
       $(".titleerror").html("<p class='text text-danger'>Title is empty</p>");
     } else {
@@ -46,14 +69,21 @@
       $(".dpaymenterror").html("<p class='text text-success'></p>");
       dvalidation = true;
     }
-    if (tvalidation == true && avalidation == true && dvalidation == true) {
+    if ($.trim(lperiod) == '') {
+      $(".lperioderror").html("<p class='text text-danger'>Loan Period cannot be empty</p>");
+    } else {
+      $(".lperioderror").html("<p class='text text-success'></p>");
+      lvalidation = true;
+    }
+    if (tvalidation == true && avalidation == true && dvalidation == true && lvalidation == true) {
       $.ajax({
         type: "POST",
-        url: "../other_controller/emiloanentry_controller.php",
+        url: "other_controller/emiloanentry_controller.php",
         data: {
           l_title: title,
           l_amount: amount,
           l_down_payment: dpayment,
+          l_period: lperiod,
           l_c_id: l_c_id,
           action: 'addloan'
         },

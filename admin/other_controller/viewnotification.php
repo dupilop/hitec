@@ -2,8 +2,9 @@
   session_start();
   require('../../db/connect.php');
   require '../../classes/databasetable.php';
-
+  $sabc = new DatabaseTable('superadmins');
   $abc = new DatabaseTable('admins');
+  $stabc = new DatabaseTable('staffs');
   $userid = $_SESSION['id'];
   ?>
  <script type="text/javascript">
@@ -88,7 +89,7 @@
  <?php
   // $asd = $pdo->query("SELECT * FROM admins");
   $query = "SELECT * FROM notifications n
-LEFT JOIN admins a ON n.u_id=a.a_id WHERE n.u_id='$userid' && n.u_type='admin'";
+LEFT JOIN admins a ON n.u_id=a.a_id";
   $statement = $pdo->prepare($query);
   $statement->execute();
   $result = $statement->fetchAll();
@@ -113,7 +114,21 @@ LEFT JOIN admins a ON n.u_id=a.a_id WHERE n.u_id='$userid' && n.u_type='admin'";
                     <tbody>';
   if ($total_row > 0) {
     foreach ($result as $a) {
-
+      if ($a['u_type'] == 'superadmin') {
+        $q = $sabc->find('sa_id', $a['u_id']);
+        $qq = $q->fetch();
+        $email = $qq['sa_email'];
+      } else if ($a['u_type'] == 'admins') {
+        $email = $a['a_email'];
+      } else {
+        $q2 = $stabc->find('s_id', $a['u_id']);
+        $qq2 = $q2->fetch();
+        if (isset($qq['s_email'])) {
+          $email = $qq['s_email'];
+        } else {
+          $email = '<span class="badge badge-warning">Not set</span>';
+        }
+      }
       $output .= '
                         <tr>
                         <td>' . $a['n_text'] . '</td>';
@@ -121,12 +136,16 @@ LEFT JOIN admins a ON n.u_id=a.a_id WHERE n.u_id='$userid' && n.u_type='admin'";
 
 
       $output .=
-        '<td>' . $a['a_email'] . '</td>
+        '<td>' . $email . '</td>
                         <td>' . $a['u_type'] . '</td>
                         <td>' . $a['n_receiver'] . '</td>
                         <td>' . $a['n_date'] . '</td>
                        
-                        <td>                       
+                        <td>
+                        <a href="editnotification?n_id=' . $a['n_id'] . '"><button type="button" class="btn btn-primary btn-sm">
+                        <i class="fa fa-edit"></i>
+                        </button></a>
+                       
                         <button class="btn btn-sm btn-danger delete" id="' . $a['n_id'] . '">
                         <i class="fa fa-trash"></i>
                         </button>

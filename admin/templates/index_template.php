@@ -2,50 +2,42 @@
 require '../db/connect.php';
 $userid = $_SESSION['id'];
 //total customers
-$cusers = $pdo->prepare("SELECT * FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id WHERE s.s_a_id='$userid'");
+$cusers = $pdo->prepare("SELECT * FROM customers");
 $cusers->execute();
 $result = $cusers->fetchAll();
 $total_row = $cusers->rowCount();
 
 //total male customers
-$cusers2 = $pdo->prepare("SELECT * FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id WHERE s.s_a_id='$userid' && c.c_gender='Male'");
+$cusers2 = $pdo->prepare("SELECT * FROM customers WHERE c_gender='Male'");
 $cusers2->execute();
 $result2 = $cusers2->fetchAll();
 $total_row2 = $cusers2->rowCount();
 
 //total female customers
-$cusers3 = $pdo->prepare("SELECT * FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id WHERE s.s_a_id='$userid' && c.c_gender='Female'");
+$cusers3 = $pdo->prepare("SELECT * FROM customers WHERE c_gender='Female'");
 $cusers3->execute();
 $result3 = $cusers3->fetchAll();
 $total_row3 = $cusers3->rowCount();
 
 //total others customers
-$cusers33 = $pdo->prepare("SELECT * FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id WHERE s.s_a_id='$userid' && c.c_gender='Others'");
+$cusers33 = $pdo->prepare("SELECT * FROM customers WHERE c_gender='Others'");
 $cusers33->execute();
 $result33 = $cusers33->fetchAll();
 $total_row33 = $cusers33->rowCount();
 
 //total collection
-$cusers4 = $pdo->prepare("SELECT c.c_id, c.c_name, s.s_id, s.s_fullname, ms.ms_id, ms.ms_amount FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id 
-                    INNER JOIN masiksavings ms ON ms.c_id=c.c_id WHERE s.s_a_id='$userid'");
+$cusers4 = $pdo->prepare("SELECT * FROM masiksavings");
 $cusers4->execute();
 $result4 = $cusers4->fetchAll();
 $tot = 0;
 $total_row4 = $cusers4->rowCount();
 if ($total_row > 0) {
   foreach ($result4 as $con) {
-    $tot = $tot + $con['ms_amount'];;
+    $tot = $tot + $con['ms_amount'];
   }
 }
 
-$cusers44 = $pdo->prepare("SELECT c.c_id, c.c_name, s.s_id, s.s_fullname, lt.lt_id, lt.lt_uploaddate, lt.lt_grand_total FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id 
-                    INNER JOIN loan_transactions lt ON lt.c_id=c.c_id WHERE s.s_a_id='$userid'");
+$cusers44 = $pdo->prepare("SELECT * FROM loan_transactions");
 $cusers44->execute();
 $result44 = $cusers44->fetchAll();
 $tot44 = 0;
@@ -55,6 +47,7 @@ if ($total_row44 > 0) {
     $tot44 = $tot44 + $con44['lt_grand_total'];
   }
 }
+echo $tot;
 //total collections including loans and savings
 $totcollections = $tot + $tot44;
 
@@ -63,9 +56,7 @@ $totcollections = $tot + $tot44;
 //today savings collection 
 date_default_timezone_set('Asia/Kathmandu');
 $today = date("Y-m-d");
-$cusers5 = $pdo->prepare("SELECT c.c_id, c.c_name, s.s_id, s.s_fullname, ms.ms_id, ms.ms_amount FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id 
-                    INNER JOIN masiksavings ms ON ms.c_id=c.c_id WHERE s.s_a_id='$userid' && ms.ms_dateupload LIKE '%$today%'");
+$cusers5 = $pdo->prepare("SELECT * FROM masiksavings WHERE ms_dateupload LIKE '%$today%'");
 $cusers5->execute();
 $result5 = $cusers5->fetchAll();
 $tot5 = 0;
@@ -77,9 +68,7 @@ if ($total_row5 > 0) {
 }
 
 //today loans collections
-$cusers55 = $pdo->prepare("SELECT c.c_id, c.c_name, s.s_id, s.s_fullname, lt.lt_id, lt.lt_uploaddate, lt.lt_grand_total FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id 
-                    INNER JOIN loan_transactions lt ON lt.c_id=c.c_id WHERE s.s_a_id='$userid' && lt.lt_uploaddate LIKE '%$today%'");
+$cusers55 = $pdo->prepare("SELECT * FROM loan_transactions WHERE lt_uploaddate LIKE '%$today%'");
 $cusers55->execute();
 $result55 = $cusers55->fetchAll();
 $tot55 = 0;
@@ -97,9 +86,7 @@ $totall5 = $tot5 + $tot55;
 
 $d = strtotime("-1 Days");
 $yesterday =  date("Y-m-d", $d);
-$ycusers5 = $pdo->prepare("SELECT c.c_id, c.c_name, s.s_id, s.s_fullname, ms.ms_id, ms.ms_amount FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id 
-                    INNER JOIN masiksavings ms ON ms.c_id=c.c_id WHERE s.s_a_id='$userid' && ms.ms_dateupload LIKE '%$yesterday%'");
+$ycusers5 = $pdo->prepare("SELECT * FROM masiksavings WHERE ms_dateupload LIKE '%$yesterday%'");
 $ycusers5->execute();
 $yresult5 = $ycusers5->fetchAll();
 $ytot5 = 0;
@@ -111,9 +98,7 @@ if ($ytotal_row5 > 0) {
 }
 
 //yesterday loans collections
-$ycusers55 = $pdo->prepare("SELECT c.c_id, c.c_name, s.s_id, s.s_fullname, lt.lt_id, lt.lt_uploaddate, lt.lt_grand_total FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id 
-                    INNER JOIN loan_transactions lt ON lt.c_id=c.c_id WHERE s.s_a_id='$userid' && lt.lt_uploaddate LIKE '%$yesterday%'");
+$ycusers55 = $pdo->prepare("SELECT * FROM loan_transactions WHERE lt_uploaddate LIKE '%$yesterday%'");
 $ycusers55->execute();
 $yresult55 = $ycusers55->fetchAll();
 $ytot55 = 0;
@@ -131,9 +116,7 @@ $ytotall5 = $ytot5 + $ytot55;
 //collection two days before
 $d2 = strtotime("-2 Days");
 $twodayago =  date("Y-m-d", $d2);
-$ycusers6 = $pdo->prepare("SELECT c.c_id, c.c_name, s.s_id, s.s_fullname, ms.ms_id, ms.ms_amount FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id 
-                    INNER JOIN masiksavings ms ON ms.c_id=c.c_id WHERE s.s_a_id='$userid' && ms.ms_dateupload LIKE '%$twodayago%'");
+$ycusers6 = $pdo->prepare("SELECT * FROM masiksavings WHERE ms_dateupload LIKE '%$twodayago%'");
 $ycusers6->execute();
 $yresult6 = $ycusers6->fetchAll();
 $ytot6 = 0;
@@ -144,9 +127,7 @@ if ($ytotal_row6 > 0) {
   }
 }
 //2 day ago loans collections
-$ycusers66 = $pdo->prepare("SELECT c.c_id, c.c_name, s.s_id, s.s_fullname, lt.lt_id, lt.lt_uploaddate, lt.lt_grand_total FROM customers c 
-                    LEFT JOIN staffs s ON c.c_created_by=s.s_id || c.c_created_by=s.s_a_id 
-                    INNER JOIN loan_transactions lt ON lt.c_id=c.c_id WHERE s.s_a_id='$userid' && lt.lt_uploaddate LIKE '%$twodayago%'");
+$ycusers66 = $pdo->prepare("SELECT * FROM loan_transactions WHERE lt_uploaddate LIKE '%$twodayago%'");
 $ycusers66->execute();
 $yresult66 = $ycusers66->fetchAll();
 $ytot66 = 0;
@@ -161,40 +142,56 @@ if ($ytotal_row66 > 0) {
 $ytotall6 = $ytot6 + $ytot66;
 
 //staff count
-$susers = $pdo->prepare("SELECT * FROM staffs WHERE s_a_id='$userid'");
-$susers->execute();
+$susers = $pdo->prepare("SELECT * FROM admins a 
+INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id
+INNER JOIN roles r ON r.r_id=ra.ras_r_id WHERE r.r_name=:rname");
+$susers->execute(['rname' => 'staff']);
 $result6 = $susers->fetchAll();
 $total_row6 = $susers->rowCount();
+
+//admin count
+$ausers = $pdo->prepare("SELECT * FROM admins a 
+INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id
+INNER JOIN roles r ON r.r_id=ra.ras_r_id WHERE r.r_name=:rname");
+$ausers->execute(['rname' => 'admin']);
+$result7 = $ausers->fetchAll();
+$total_row7 = $ausers->rowCount();
+
+//stock count
+$stusers = $pdo->prepare("SELECT * FROM stocks");
+$stusers->execute();
+$result8 = $stusers->fetchAll();
+$total_row8 = $stusers->rowCount();
 ?>
 <div class="row" style="display: inline-block;width: 100%;">
   <div class="tile_count">
-    <div class="col-md-3 col-sm-4  tile_stats_count">
+    <div class="col-md-2 col-sm-4  tile_stats_count">
       <span class="count_top"><i class="fa fa-user"></i> Total Customers</span>
       <div class="count"><?php echo $total_row;  ?></div>
     </div>
 
-    <!-- <div class="col-md-2 col-sm-4  tile_stats_count">
-              <span class="count_top"><i class="fa fa-user"></i> Total Males</span>
-              <div class="count green"><?php echo $total_row2;  ?></div>
-            </div>
-            <div class="col-md-2 col-sm-4  tile_stats_count">
-              <span class="count_top"><i class="fa fa-user"></i> Total Females</span>
-              <div class="count"><?php echo $total_row3;  ?></div>
-            </div> -->
 
-    <div class="col-md-3 col-sm-4  tile_stats_count">
-      <span class="count_top"><i class="fa fa-user"></i> Today Collections</span>
-      <div class="count"><?php echo $totall5;  ?></div>
+    <div class="col-md-2 col-sm-4  tile_stats_count">
+      <span class="count_top"><i class="fa fa-user"></i> Total Admins</span>
+      <div class="count"><?php echo $total_row7;  ?></div>
     </div>
-    <div class="col-md-3 col-sm-4  tile_stats_count">
-      <span class="count_top"><i class="fa fa-user"></i> Total Collections</span>
-      <div class="count"><?php echo $totcollections;  ?></div>
-    </div>
-    <div class="col-md-3 col-sm-4  tile_stats_count">
+    <div class="col-md-2 col-sm-4  tile_stats_count">
       <span class="count_top"><i class="fa fa-user"></i> Total Staffs</span>
       <div class="count"><?php echo $total_row6;  ?></div>
     </div>
+    <div class="col-md-2 col-sm-4  tile_stats_count">
+      <span class="count_top"><i class="fa fa-user"></i> Today Collections</span>
+      <div class="count"><?php echo $totall5;  ?></div>
+    </div>
+    <div class="col-md-2 col-sm-4  tile_stats_count">
+      <span class="count_top"><i class="fa fa-user"></i> Total Collections</span>
+      <div class="count"><?php echo $totcollections;  ?></div>
+    </div>
 
+    <div class="col-md-2 col-sm-4  tile_stats_count">
+      <span class="count_top"><i class="fa fa-user"></i> Total Stocks</span>
+      <div class="count green"><?php echo $total_row8;  ?></div>
+    </div>
   </div>
 </div>
 <!-- /top tiles -->
@@ -316,11 +313,11 @@ $total_row6 = $susers->rowCount();
 $total_row2;
 $total_row;
 $permale = (($total_row - $total_row2) / $total_row) * 100;
-$permalee = 100 - $permale;
+$permalee = number_format(100 - $permale, 2);
 $perfemale = (($total_row - $total_row3) / $total_row) * 100;
-$perfemalee = 100 - $perfemale;
+$perfemalee = number_format(100 - $perfemale, 2);
 $perother = (($total_row - $total_row33) / $total_row) * 100;
-$perotherr = 100 - $perother;
+$perotherr = number_format(100 - $perother, 2);
 
 $c_array = array($permalee, $perfemalee, $perotherr);
 echo '<script type="text/javascript">
@@ -370,19 +367,19 @@ echo '<script type="text/javascript">
                 <td>
                   <p><i class="fa fa-square red"></i>Males </p>
                 </td>
-                <td><?php echo number_format($permalee, 2); ?>%</td>
+                <td><?php echo $permalee; ?>%</td>
               </tr>
               <tr>
                 <td>
                   <p><i class="fa fa-square purple"></i>Females</p>
                 </td>
-                <td><?php echo number_format($perfemalee, 2); ?>%</td>
+                <td><?php echo $perfemalee; ?>%</td>
               </tr>
               <tr>
                 <td>
                   <p><i class="fa fa-square green"></i>Others</p>
                 </td>
-                <td><?php echo number_format($perotherr, 2); ?>%</td>
+                <td><?php echo $perotherr; ?>%</td>
               </tr>
 
             </table>

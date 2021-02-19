@@ -1,4 +1,3 @@
 <?php
 	$title = 'Notifications';
-	$content = loadTemplate('../templates/notification_template.php', []);
-?>
+	$content = loadTemplate('templates/notification_template.php', []);

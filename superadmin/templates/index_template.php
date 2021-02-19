@@ -142,14 +142,18 @@ if ($ytotal_row66 > 0) {
 $ytotall6 = $ytot6 + $ytot66;
 
 //staff count
-$susers = $pdo->prepare("SELECT * FROM staffs");
-$susers->execute();
+$susers = $pdo->prepare("SELECT * FROM admins a 
+INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id
+INNER JOIN roles r ON r.r_id=ra.ras_r_id WHERE r.r_name=:rname");
+$susers->execute(['rname' => 'staff']);
 $result6 = $susers->fetchAll();
 $total_row6 = $susers->rowCount();
 
 //admin count
-$ausers = $pdo->prepare("SELECT * FROM admins");
-$ausers->execute();
+$ausers = $pdo->prepare("SELECT * FROM admins a 
+INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id
+INNER JOIN roles r ON r.r_id=ra.ras_r_id WHERE r.r_name=:rname");
+$ausers->execute(['rname' => 'admin']);
 $result7 = $ausers->fetchAll();
 $total_row7 = $ausers->rowCount();
 

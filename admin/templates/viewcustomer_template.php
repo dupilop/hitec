@@ -16,6 +16,7 @@ if (isset($_GET['did']) && $_GET['status'] == 'delete') {
   load_data();
 
   function load_data() {
+    $("#user_data").html('<i class="fa fa-spinner fa-spin fa-2x">');
     $.ajax({
       url: "other_controller/viewcustomer.php",
       method: "POST",

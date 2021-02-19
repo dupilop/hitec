@@ -137,7 +137,7 @@ $userid = $_SESSION['id'];
                 <label class="col-form-label col-md-6 col-sm-3 label-align" for="first-name">Father's Name
                 </label>
                 <div class="col-md-6 col-sm-6 ">
-                  <input type="text" id="c_father_name" name="c_father_name" class="form-control  ">
+                  <input type="text" id="c_father_name" name="c_father_name" class="form-control">
                 </div>
               </div>
 
@@ -187,15 +187,60 @@ $userid = $_SESSION['id'];
                 </label>
                 <div class="col-md-6 col-sm-6 ">
                   <input type="file" id="c_back_citizenship" class="dropify" name="c_back_citizenship" />
-                  <!-- <input id="c_created_by" name="c_created_by" value="" class="form-control" type="hidden"> -->
                 </div>
               </div>
               <div class="form-group col-md-6">
+                <label class="col-form-label col-md-6 col-sm-3 label-align">Assign to *
+                </label>
+                <div class="col-md-6 col-sm-6">
+                  <select class="form-control select2" name="c_created_by" id="c_created_by">
+                    <option value="">Choose One</option>
+                    <?php
+                    $adm = $pdo->prepare("SELECT * FROM admins a 
+                    INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id
+                    INNER JOIN roles r ON r.r_id=ra.ras_r_id WHERE NOT r.r_name=:rname AND r.r_name='admin'");
+                    $adm->execute(['rname' => 'superadmin']);
+                    $admfet = $adm->fetchAll();
+                    print_r($admfet);
+                    $admcount = $adm->rowCount();
+                    if ($admcount > 0) {
+                      echo ' <optgroup label="Admins">';
+                      foreach ($admfet as $adm2) {
+                        echo '<option value="' . $adm2['a_id'] . '">' . $adm2['a_fullname'] . '</option>';
+                      }
+                      echo '</optgroup>';
+                    }
+                    $adm2 = $pdo->prepare("SELECT * FROM admins a 
+                    INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id
+                    INNER JOIN roles r ON r.r_id=ra.ras_r_id WHERE NOT r.r_name=:rname AND r.r_name='staff'");
+                    $adm2->execute(['rname' => 'superadmin']);
+                    $admfet2 = $adm2->fetchAll();
+                    print_r($admfet2);
+                    $admcount2 = $adm2->rowCount();
+                    if ($admcount2 > 0) {
+                      echo ' <optgroup label="Staff">';
+                      foreach ($admfet2 as $adm22) {
+                        echo '<option value="' . $adm22['a_id'] . '">' . $adm22['a_fullname'] . '</option>';
+                      }
+                      echo '</optgroup>';
+                    }
+                    ?>
 
-                <div class="col-md-6 col-sm-6 ">
-                  <input id="c_created_by_type" name="c_created_by_type" value="admin" class="form-control" type="hidden">
+                  </select>
+                  <div class="c_creator_error"></div>
+
+                </div>
+                <div class="form-group col-md-12">
+                  <div class="col-md-12">
+                    <label for="middle-name" class="col-form-label col-md-6 label-align">Limitations *</label>
+                    <div class="col-md-6 col-sm-6">
+                      <input id="c_limitations" class="form-control col" placeholder="Enter limitation" type="text" name="c_limitations">
+                    </div>
+                    <div class="c_limitations_error"></div>
+                  </div>
                 </div>
               </div>
+
 
             </div>
 
@@ -204,8 +249,6 @@ $userid = $_SESSION['id'];
             <div class="ln_solid">
               <div class="form-group">
                 <div class="col-md-12" style="display:flex;justify-content: flex-end;">
-                  <!-- <input type="hidden" readonly name="c_created_by" value=""> -->
-                  <!-- <input type="hidden" readonly name="c_created_by_type" value="superadmin"> -->
                   <div class="relbtn">
                     <button type='submit' id="regcus" class="btn btn-primary add">Add</button>
                   </div>
@@ -229,6 +272,9 @@ $userid = $_SESSION['id'];
       return false;
     return true;
   }
+  $('.select2').select2({
+    theme: 'bootstrap4',
+  });
 </script>
 
 
@@ -277,8 +323,8 @@ $userid = $_SESSION['id'];
 
     var citichk = $(this).val();
     $(this).attr("maxlength", "14");
-    if (citichk.length < 10) {
-      $("#c_citizen_error").html("<p class='text text-danger'>The value must be greater than 10 digit</p>");
+    if (citichk.length < 5) {
+      $("#c_citizen_error").html("<p class='text text-danger'>The value must be greater than 5 digit</p>");
       $(this).focus();
       nagchk = false;
     } else {
@@ -313,7 +359,10 @@ $userid = $_SESSION['id'];
     var c_permanent_address = $("#c_permanent_address").val();
     var c_current_address = $("#c_current_address").val();
     var email = $("#c_email").val();
+    var c_created_by = $("#c_created_by").val();
+    var c_limitations = $("#c_limitations").val();
     var cnumvalidation = false;
+    var climitvalidation = false;
     var ccitizenvalidation = false;
     var cnamevalidation = false;
     var dobvalidation = false;
@@ -322,7 +371,7 @@ $userid = $_SESSION['id'];
     var cpavalidation = false;
     var evalidation = false;
     var ccavalidation = false;
-
+    var creatervalid = false;
     if (!validateEmail(email)) {
 
       $(".c_email_error").html("<p class='text text-danger'>Email is invalid</p>");
@@ -339,6 +388,12 @@ $userid = $_SESSION['id'];
     } else {
       $(".c_number_error").html("<p class='text text-success'></p>");
       cnumvalidation = true;
+    }
+    if ($.trim(c_limitations) == '') {
+      $(".c_limitations_error").html("<p class='text text-danger'>Customer Limitation is empty</p>");
+    } else {
+      $(".c_limitations_error").html("<p class='text text-success'></p>");
+      climitvalidation = true;
     }
     if ($.trim(c_citizenship_number) == '') {
       $(".c_citizen_error").html("<p class='text text-danger'>Citizenship number cannot be null</p>");
@@ -357,6 +412,12 @@ $userid = $_SESSION['id'];
     } else {
       $(".c_name_error").html("<p class='text text-success'></p>");
       cnamevalidation = true;
+    }
+    if ($.trim(c_created_by) == '') {
+      $(".c_creator_error").html("<p class='text text-danger'>Creator must be assigned</p>");
+    } else {
+      $(".c_creator_error").html("<p class='text text-success'></p>");
+      creatervalid = true;
     }
     if ($.trim(c_dob) == '') {
       $(".c_dob_error").html("<p class='text text-danger'>DOB Not Valid</p>");
@@ -389,7 +450,7 @@ $userid = $_SESSION['id'];
       ccavalidation = true;
     }
 
-    if (evalidation == true && cnumvalidation == true && ccitizenvalidation == true && cnamevalidation == true && dobvalidation == true && ovalidation == true &&
+    if (evalidation == true && climitvalidation == true && creatervalid == true && cnumvalidation == true && ccitizenvalidation == true && cnamevalidation == true && dobvalidation == true && ovalidation == true &&
       mvalidation == true && cpavalidation == true && ccavalidation == true) {
       $.ajax({
         type: "POST",

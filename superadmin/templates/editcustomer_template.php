@@ -213,61 +213,64 @@ if (isset($_GET['id'])) {
                                 </label>
                                 <div class="col-md-6 col-sm-6 ">
                                     <input type="file" id="c_back_citizenship" class="dropify" name="c_back_citizenship" data-default-file="../images/customers/<?php echo $abc2['c_back_citizenship'] ?>" />
-                                    <input id="c_created_by" name="c_created_by" value="<?php echo $abc2['c_created_by'] ?>" class="form-control" type="hidden">
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
                                 <label class="col-form-label col-md-6 col-sm-3 label-align">Assign to
                                 </label>
                                 <div class="col-md-6 col-sm-6 ">
-                                    <select class="form-control" name="c_created_by_type" id="c_created_by_type">
+                                    <select class="form-control select2" name="c_created_by" id="c_created_by">
+
                                         <option>Choose One</option>
-                                        <optgroup label="Roles">
-                                            <?php
-                                            if ($abc2['c_created_by_type'] == 'admin') {
-                                                echo '<option selected>admin</option>
-                                                <option>staff </option>';
-                                            } else if ($abc2['c_created_by_type'] == 'staff') {
-                                                echo '<option>admin</option>
-                                            <option selected>staff </option>';
-                                            } else {
-                                                echo '<option>admin</option>
-                                                <option>staff </option>';
+                                        <?php
+                                        $adm = $pdo->prepare("SELECT * FROM admins a 
+                    INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id
+                    INNER JOIN roles r ON r.r_id=ra.ras_r_id WHERE NOT r.r_name=:rname AND r.r_name='admin'");
+                                        $adm->execute(['rname' => 'superadmin']);
+                                        $admfet = $adm->fetchAll();
+                                        $admcount = $adm->rowCount();
+                                        if ($admcount > 0) {
+                                            echo ' <optgroup label="Admins">';
+                                            foreach ($admfet as $adm2) {
+                                                if ($adm2['a_id'] == $abc2['c_created_by']) {
+                                                    echo '<option value="' . $adm2['a_id'] . '" selected>' . $adm2['a_fullname'] . '</option>';
+                                                } else {
+                                                    echo '<option value="' . $adm2['a_id'] . '">' . $adm2['a_fullname'] . '</option>';
+                                                }
                                             }
-                                            ?>
-
-
-                                        </optgroup>
+                                            echo '</optgroup>';
+                                        }
+                                        $adm2 = $pdo->prepare("SELECT * FROM admins a 
+                    INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id
+                    INNER JOIN roles r ON r.r_id=ra.ras_r_id WHERE NOT r.r_name=:rname AND r.r_name='staff'");
+                                        $adm2->execute(['rname' => 'superadmin']);
+                                        $admfet2 = $adm2->fetchAll();
+                                        $admcount2 = $adm2->rowCount();
+                                        if ($admcount2 > 0) {
+                                            echo ' <optgroup label="Staff">';
+                                            foreach ($admfet2 as $adm22) {
+                                                if ($adm22['a_id'] == $abc2['c_created_by']) {
+                                                    echo '<option value="' . $adm22['a_id'] . '" selected>' . $adm22['a_fullname'] . '</option>';
+                                                } else {
+                                                    echo '<option value="' . $adm22['a_id'] . '">' . $adm22['a_fullname'] . '</option>';
+                                                }
+                                            }
+                                            echo '</optgroup>';
+                                        }
+                                        ?>
                                     </select>
-                                    <?php
-                                    $adm = $pdo->prepare("SELECT * FROM admins");
-                                    $adm->execute();
-                                    $admfet = $adm->fetchAll();
-                                    $admcount = $adm->rowCount();
-                                    if ($admcount > 0) {
-                                        echo '<select class="form-control" id="admin">';
-                                        foreach ($admfet as $vasl) {
+                                    <div class="c_creator_error"></div>
 
-                                            echo '<option value="' . $vasl['a_id'] . '">' . $vasl['a_fullname'] . '</option>';
-                                        }
-                                        echo '</select>';
-                                    }
-                                    ?>
-                                    <?php
-                                    $adm2 = $pdo->prepare("SELECT * FROM staffs");
-                                    $adm2->execute();
-                                    $admfet2 = $adm2->fetchAll();
-                                    $admcount2 = $adm2->rowCount();
-                                    if ($admcount2 > 0) {
-                                        echo '<select class="form-control" id="staff">';
-                                        foreach ($admfet2 as $vasl2) {
-
-                                            echo '<option value="' . $vasl2['s_id'] . '">' . $vasl2['s_fullname'] . '</option>';
-                                        }
-                                        echo '</select>';
-                                    }
-                                    ?>
                                 </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                            <div class="col-md-12">
+                                <label for="middle-name" class="col-form-label col-md-6 label-align">Limitations *</label>
+                                <div class="col-md-6 col-sm-6">
+                                <input id="c_limitations" class="form-control col" placeholder="Enter limitation" type="text" name="c_limitations" value="<?php echo $abc2['c_limitations'] ?>">
+                                </div>
+                                <div class="c_limitations_error"></div>
+                            </div>
                             </div>
 
                         </div>
@@ -277,12 +280,10 @@ if (isset($_GET['id'])) {
                         <div class="ln_solid">
                             <div class="form-group">
                                 <div class="col-md-12" style="display:flex;justify-content: flex-end;">
-                                    <!-- <input type="hidden" readonly name="c_created_by" value=""> -->
                                     <input type="hidden" readonly name="c_id" value="<?php echo $abc2['c_id']; ?>">
                                     <div class="relbtn">
                                         <button type='submit' id="regcus" class="btn btn-primary add">Update</button>
                                     </div>
-                                    <button type='reset' class="btn btn-success">Reset</button>
                                 </div>
                             </div>
                         </div>
@@ -304,48 +305,7 @@ if (isset($_GET['id'])) {
     }
 </script>
 
-<script type="text/javascript">
-    var creatervalid;
-    if ($("#c_created_by_type").val() == 'admin') {
-        $("#staff").hide();
-        $("#admin").show();
-        $('#admin').val($("#c_created_by").val());
-        creatervalid = true;
-    } else if ($("#c_created_by_type").val() == 'staff') {
-        $("#admin").hide();
-        $("#staff").show();
-        $('#staff').val($("#c_created_by").val());
-        creatervalid = true;
-    } else {
-        $("#admin").hide();
-        $("#staff").hide();
-        creatervalid = false;
-    }
-    $("#c_created_by_type").on("change keyup", function() {
-        if (this.value == 'admin') {
-            $("#staff").hide();
-            $("#admin").show();
-            $("#c_created_by").val($("#admin").val());
-            creatervalid = true;
-        } else if (this.value == 'staff') {
-            $("#admin").hide();
-            $("#staff").show();
-            $("#c_created_by").val($("#staff").val());
-            creatervalid = true;
-        } else {
-            $("#admin").hide();
-            $("#staff").hide();
-            $("#c_created_by").val(" ");
-            creatervalid = false;
-        }
-    });
-    $("#admin").on("change keyup", function() {
-        $("#c_created_by").val($(this).val());
-    });
-    $("#staff").on("change keyup", function() {
-        $("#c_created_by").val($(this).val());
-    });
-</script>
+
 <script src="../assets/plugins/dropify/dist/js/dropify.min.js"></script>
 <script>
     // Basic
@@ -392,7 +352,7 @@ if (isset($_GET['id'])) {
 
         var citichk = $(this).val();
         $(this).attr("maxlength", "14");
-        if (citichk.length < 10) {
+        if (citichk.length < 5) {
             $("#c_citizen_error").html("<p class='text text-danger'>The value must be greater than 10 digit</p>");
             $(this).focus();
             nagchk = false;
@@ -428,9 +388,11 @@ if (isset($_GET['id'])) {
         var c_mobile = $("#c_mobile").val();
         var c_permanent_address = $("#c_permanent_address").val();
         var c_current_address = $("#c_current_address").val();
+        var c_limitations = $("#c_limitations").val();
         var email = $("#c_email").val();
         var cnumvalidation = false;
         var ccitizenvalidation = false;
+        var climitvalidation = false;
         var cnamevalidation = false;
         var dobvalidation = false;
         var ovalidation = false;
@@ -450,11 +412,23 @@ if (isset($_GET['id'])) {
                 evalidation = true;
             }
         }
+        if ($.trim(c_created_by) == '') {
+        $(".c_creator_error").html("<p class='text text-danger'>Creator must be assigned</p>");
+        } else {
+        $(".c_creator_error").html("<p class='text text-success'></p>");
+        creatervalid = true;
+        }
         if ($.trim(c_number) == '') {
             $(".c_number_error").html("<p class='text text-danger'>Customer number is empty</p>");
         } else {
             $(".c_number_error").html("<p class='text text-success'></p>");
             cnumvalidation = true;
+        }
+        if ($.trim(c_limitations) == '') {
+        $(".c_limitations_error").html("<p class='text text-danger'>Customer Limitation is empty</p>");
+        } else {
+        $(".c_limitations_error").html("<p class='text text-success'></p>");
+        climitvalidation = true;
         }
         if ($.trim(c_citizenship_number) == '') {
             $(".c_citizen_error").html("<p class='text text-danger'>Citizenship number cannot be null</p>");
@@ -505,7 +479,7 @@ if (isset($_GET['id'])) {
             ccavalidation = true;
         }
 
-        if (evalidation == true && creatervalid == true && cnumvalidation == true && ccitizenvalidation == true && cnamevalidation == true && dobvalidation == true && ovalidation == true &&
+        if (evalidation == true && creatervalid == true && climitvalidation == true && cnumvalidation == true && ccitizenvalidation == true && cnamevalidation == true && dobvalidation == true && ovalidation == true &&
             mvalidation == true && cpavalidation == true && ccavalidation == true) {
             var data = new FormData(document.getElementById("form1"));
             data.append("action", "update");

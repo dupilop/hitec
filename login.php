@@ -35,7 +35,7 @@
       <div class="animate form login_form">
         <section class="login_content">
           <img src="images/logo/hitechvision.jpg" width="100px" height="100px">
-          <form action="" method="POST">
+          <form action="" method="POST" id="form1">
             <h1>Hitech Vision Pvt Ltd</h1>
             <div>
               <div class="field item form-group">
@@ -55,7 +55,7 @@
               </div>
               <div class="field item form-group">
                 <div class="col-md-11 col-sm-8 relbtn">
-                  <button type="button" name="login" id="login" style="float: right;" class="btn btn-primary">Login</button><br>
+                  <button type="button" name="login" id="login" style="float: right;" class="btn btn-outline-primary">Login</button><br>
                 </div>
               </div>
             </div>
@@ -122,7 +122,7 @@
 <script type="text/javascript">
   $("#login").on("click", function(e) {
     e.preventDefault();
-    $(".relbtn").html('<button type="submit" name="login" id="login" style="float: right;" class="btn btn-primary" disabled>Processing</button>');
+    $(".relbtn").html('<button type="button" name="login" id="login" style="float: right;" class="btn btn-outline-primary" disabled>Processing</button>');
     var email = $("#email").val();
     var password = $("#password").val();
     var evalidation = false;
@@ -154,7 +154,7 @@
           action: 'login'
         },
         success: function(data) {
-          $(".relbtn").html('<button type="submit" name="login" id="login" style="float: right;" class="btn btn-primary" disabled><i class="fa fa-spinner fa-spin"></i> Logging in</button>');
+          $(".relbtn").html('<button type="button" name="login" id="login" style="float: right;" class="btn btn-outline-primary" disabled><i class="fa fa-spinner fa-spin"></i> Logging in</button>');
           if ($.trim(data) == 'superadmin') {
 
             pb.clear();
@@ -176,21 +176,25 @@
               window.location.href = 'staff/';
             }, 2000);
           } else {
-            $(".relbtn").html('<button type="submit" name="login" id="login" style="float: right;" class="btn btn-primary">Login</button>');
+            $("#form1")[0].reset();
+            $(".relbtn").html('<button name="login" id="login" style="float: right;" class="btn btn-outline-primary">Login</button>');
             pb.clear();
             pb.error('<i class="fa fa-sign-in" aria-hidden="true"></i> Email and password not matched');
-
           }
 
         },
         error: function(data) {
-          $(".relbtn").html('<button type="submit" name="login" id="login" style="float: right;" class="btn btn-primary">Login</button>');
+
+          $("#form1")[0].reset();
+          $(".relbtn").html('<button name="login" id="login" style="float: right;" class="btn btn-outline-primary">Login</button>');
           pb.clear();
           pb.error('<i class="fa fa-sign-in" aria-hidden="true"></i> Cannot establish a secure connection');
         }
       });
     } else {
-      $(".relbtn").html('<button type="submit" name="login" id="login" style="float: right;" class="btn btn-primary">Login</button>');
+      // alert('asd');
+      // $("#form1")[0].reset();
+      $(".relbtn").html('<button name="login" id="login" style="float: right;" class="btn btn-outline-primary">Login</button>');
       pb.clear();
       pb.error('<i class="fa fa-sign-in" aria-hidden="true"></i> Cannot establish a secure connection');
     }

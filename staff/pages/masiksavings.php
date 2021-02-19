@@ -2,8 +2,8 @@
 <?php
 $abc = new DatabaseTable('masiksavings');
 $abc2 = new DatabaseTable('customers');
-if(isset($_POST['pay'])){
-	
+if (isset($_POST['pay'])) {
+
 	$_POST['ms_month'] = date("m");
 	$_POST['ms_year'] = date("Y");
 	$_POST['ms_dateupload'] = date("Y-m-d H:i:sa");
@@ -18,6 +18,6 @@ if(isset($_POST['pay'])){
 	$ins = $abc2->save($criteria, 'c_id');
 	header('Location: masiksavings');
 }
-	$title = 'Invoice-Masik Savings';
-	$content = loadTemplate('../templates/masiksavings_template.php', []);
+$title = 'Invoice-Masik Savings';
+$content = loadTemplate('templates/masiksavings_template.php', []);
 ?>

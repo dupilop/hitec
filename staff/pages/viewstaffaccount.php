@@ -1,4 +1,3 @@
 <?php
 	$title = 'Staff Account';
-	$content = loadTemplate('../templates/viewstaffaccount_template.php', []);
-?>
+	$content = loadTemplate('templates/viewstaffaccount_template.php', []);

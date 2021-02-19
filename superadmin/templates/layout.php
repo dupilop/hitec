@@ -1,12 +1,12 @@
 <?php
 // session_start();
-if (!(isset($_SESSION['sadminloggedin']) && $_SESSION['sadminloggedin'] == true)) {
+if (!(isset($_SESSION['superadminloggedin']) && $_SESSION['superadminloggedin'] == true)) {
   header('Location: ../login.php');
 }
 
 require '../db/connect.php';
 $userid = $_SESSION['id'];
-$sql = "SELECT * FROM superadmins WHERE sa_id='$userid'";
+$sql = "SELECT * FROM admins WHERE a_id='$userid'";
 $abc = $pdo->prepare($sql);
 $abc->execute();
 $dat = $abc->fetch();
@@ -35,10 +35,15 @@ $dat = $abc->fetch();
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="../prompt_action/prompt-boxes.min.css">
   <!-- Bootstrap -->
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
   <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
-
-
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- select2 css -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <!-- <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet"> -->
 
 
@@ -69,7 +74,7 @@ $dat = $abc->fetch();
             </div>
             <div class="profile_info">
               <span>Welcome,</span>
-              <h2><?php echo $dat['sa_company_name'];  ?></h2>
+              <h2><?php echo $dat['a_fullname'];  ?></h2>
             </div>
           </div>
           <!-- /menu profile quick info -->
@@ -89,19 +94,25 @@ $dat = $abc->fetch();
                     <li><a href="registration">Registration</a></li>
                     <li><a href="viewcustomer">View Customer</a></li>
                     <li><a href="stocks">Stocks</a></li>
-                    <!--<li><a href="advancepayment">Advance Payment</a></li>-->
-                    <li><a href="emiloanentry">EMI Loan Entry</a></li>
                   </ul>
                 </li>
-                <li><a><i class="fa fa-desktop"></i> Invoice<span class="fa fa-chevron-down"></span></a>
+                <li><a><i class="fa fa-desktop"></i> Savings<span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu">
+                    <li><a href="masiksavings">Make a save</a></li>
+                    <li><a href="masiksavingscheckup">Savings Checkup</a></li>
+
+                  </ul>
+                </li>
+                <li><a><span class="iconify" data-icon="fa-solid:piggy-bank" data-inline="false" style="font-size:20px;"></span>&nbsp EMI <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
                     <li><a href="emicalculator">EMI Calculator</a></li>
-                    <li><a href="masiksavings">Savings</a></li>
+                    <li><a href="emiloanentry">EMI Loan Entry</a></li>
                     <li><a href="loanpayment">EMI Payment</a></li>
+                    <li><a href="loansettlement"> EMI Settlement</a></li>
+                    <li><a href="paymentrollback">Payment Roll Back</a></li>
 
                   </ul>
                 </li>
-
                 <li><a><i class="fa fa-bar-chart-o"></i> Report <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
                     <li><a href="paymentreport"> Saving Payment Report</a></li>
@@ -110,13 +121,12 @@ $dat = $abc->fetch();
 
                   </ul>
                 </li>
+
                 <li><a><i class="fa fa-wrench" aria-hidden="true"></i>Setup <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                    <li><a href="viewadminaccount">Admin Account</a></li>
                     <li><a href="viewstaffaccount">Staff Acount</a></li>
                     <li><a href="notification">Notification </a></li>
-                    <li><a href="paymentrollback">Payment Roll Back</a></li>
-                    <li><a href="masiksavingscheckup">Masik Saving Checkup</a></li>
+                    <li><a href="salarysheetentry">Salary Sheet</a></li>
                   </ul>
                 </li>
               </ul>
@@ -318,7 +328,11 @@ $dat = $abc->fetch();
   <script src="../vendors/pnotify/dist/pnotify.js"></script>
   <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
   <script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
-
+  <script type="text/javascript">
+    $('.select2').select2({
+      theme: 'bootstrap4',
+    });
+  </script>
 
 
 </body>

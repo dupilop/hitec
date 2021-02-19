@@ -7,7 +7,7 @@ require '../../classes/databasetable.php';
 <a href="javascript:;" class="dropdown-toggle info-number" id="navbarDropdown1" data-toggle="dropdown" aria-expanded="false">
   <i class="fa fa-envelope-o"></i>
   <?php
-  $rr = $pdo->prepare("SELECT * FROM notifications WHERE n_status='new' && n_visibility='yes' && (n_receiver='all' || n_receiver='admin') ORDER BY n_id DESC");
+  $rr = $pdo->prepare("SELECT * FROM notifications WHERE n_status='new' && n_visibility='yes' && (n_receiver='all' || n_receiver='superadmin')  ORDER BY n_id DESC");
   $rr->execute();
   $result = $rr->fetchAll();
 
@@ -28,7 +28,7 @@ require '../../classes/databasetable.php';
 
 <ul class="dropdown-menu list-unstyled msg_list" role="menu" aria-labelledby="navbarDropdown1">
   <?php
-  $ss = $pdo->prepare("SELECT * FROM notifications WHERE n_receiver='all' || n_receiver='admin'");
+  $ss = $pdo->prepare("SELECT * FROM notifications WHERE (n_receiver='all' || n_receiver='superadmin')");
   $ss->execute();
   $rc = $ss->rowCount();
   if ($rc > 0) {
@@ -37,7 +37,7 @@ require '../../classes/databasetable.php';
   ?>
       <li class="nav-item">
         <a class="dropdown-item" href="profile">
-          <span class="image"><img src="../images/bell.png" alt="Profile Image" /></span>
+          <span class="image"><img src="../../images/bell.png" alt="Profile Image" /></span>
           <span>
             <span><?php echo $rrr['u_type'];  ?></span>
             <?php

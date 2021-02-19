@@ -17,7 +17,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'chkcitizenforup') {
     $abc = $pdo->prepare("SELECT * FROM customers WHERE c_citizenship_number=:c_citizenship_number");
     $abc->execute(['c_citizenship_number' => $_POST['citichk']]);
     $rabc = $abc->rowCount();
-    if ($_POST['oldcitinum'] == $_POST['oldcitinum']) {
+    if ($_POST['oldcitinum'] == $_POST['citichk']) {
         echo true;
     } else {
         if ($rabc > 0) {

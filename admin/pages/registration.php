@@ -1,3 +1,3 @@
 <?php
-	$title = 'Home Page';
+	$title = 'Customer Registration';
 	$content = loadTemplate('templates/registration_template.php', []);

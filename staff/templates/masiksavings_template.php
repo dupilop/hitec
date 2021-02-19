@@ -1,8 +1,6 @@
 <?php
-
+// session_start();
 require('../db/connect.php');
-$userid = $_SESSION['id'];
-$creatorid = $_SESSION['creator_id'];
 ?>
 
 
@@ -12,7 +10,7 @@ $creatorid = $_SESSION['creator_id'];
   <div class="card-body">
 
     <script type="text/javascript">
-      $(document).ready(function() {
+      $(function() {
         // Setup - add a text input to each footer cell
         $('#example thead tr').clone(true).appendTo('#example thead');
         $('#example thead tr:eq(1) th.sear').each(function(i) {
@@ -33,12 +31,19 @@ $creatorid = $_SESSION['creator_id'];
 
         var table = $('#example').DataTable({
           orderCellsTop: true,
-          fixedHeader: true
+          fixedHeader: true,
+          responsive: true,
+          processing: true,
+          language: {
+            processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+          }
+
         });
 
         var table2 = $('#example2').DataTable({
           orderCellsTop: true,
-          fixedHeader: true
+          fixedHeader: true,
+          responsive: true
         });
       });
     </script>
@@ -48,7 +53,7 @@ $creatorid = $_SESSION['creator_id'];
       <?php
 
       $asd = $pdo->query("SELECT * FROM customers c
-                  LEFT JOIN advances ad ON c.c_id=ad.adv_c_id WHERE c.c_created_by='$userid' || c.c_created_by='$creatorid'
+                  LEFT JOIN advances ad ON c.c_id=ad.adv_c_id
                   ");
 
       ?>
@@ -125,6 +130,7 @@ $creatorid = $_SESSION['creator_id'];
                   Name:<br>
                   Occupation: <br>
                   Contact No: <br>
+                  Address: <br>
                   Loan amount: <br> </b>
               </div>
               <div class="col-auto">
@@ -132,6 +138,7 @@ $creatorid = $_SESSION['creator_id'];
                 <?php echo $dat2['c_name']; ?><br>
                 <?php echo $dat2['c_occupation']; ?><br>
                 <?php echo $dat2['c_mobile']; ?><br>
+                <?php echo $dat2['c_current_address']; ?><br>
                 <?php
                 if ($rcount > 0) {
                   echo $lon['l_amount'] . '<br>';

@@ -70,7 +70,6 @@ $userid = $_SESSION['id'];
                             <div class="form-group">
                                 <div class="col-md-6 offset-md-3">
                                     <input type="hidden" readonly name="st_created_by" value="<?php echo $userid;  ?>">
-                                    <input type="hidden" readonly name="st_created_by_type" value="admin">
                                     <button type='submit' id="add" name="add" class="btn btn-primary add">Add</button>
                                     <button type='reset' class="btn btn-success">Reset</button>
                                 </div>
@@ -103,7 +102,30 @@ $userid = $_SESSION['id'];
     }
 </script>
 
-
+<script>
+    // initialize a validator instance from the "FormValidator" constructor.
+    // A "<form>" element is optionally passed as an argument, but is not a must
+    var validator = new FormValidator({
+        "events": ['blur', 'input', 'change']
+    }, document.forms[0]);
+    // on form "submit" event
+    document.forms[0].onsubmit = function(e) {
+        var submit = true,
+            validatorResult = validator.checkAll(this);
+        console.log(validatorResult);
+        return !!validatorResult.valid;
+    };
+    // on form "reset" event
+    document.forms[0].onreset = function(e) {
+        validator.reset();
+    };
+    // stuff related ONLY for this demo page:
+    $('.toggleValidationTooltips').change(function() {
+        validator.settings.alerts = !this.checked;
+        if (this.checked)
+            $('form .alert').remove();
+    }).prop('checked', false);
+</script>
 <div id="user_data">
 
 </div>
@@ -111,7 +133,6 @@ $userid = $_SESSION['id'];
     load_data();
 
     function load_data() {
-        $("#user_data").html('<i class="fa fa-spinner fa-spin"></i>');
         $.ajax({
             url: "other_controller/viewstock.php",
             method: "POST",
@@ -157,14 +178,10 @@ $userid = $_SESSION['id'];
         if (dvalidation == true && mvalidation == true && prvalidation == true && pdvalidation == true) {
             $.ajax({
                 type: "POST",
-                url: "../other_controller/addstock.php",
+                url: "other_controller/addstock.php",
                 data: new FormData(document.getElementById("form1")),
                 contentType: false,
                 processData: false,
-                beforeSend: function() {
-                    pb.clear();
-                    pb.success('Checking. Please Wait');
-                },
                 success: function(data) {
                     $("#form1")[0].reset();
                     load_data();
@@ -190,7 +207,7 @@ $userid = $_SESSION['id'];
                 if (outcome) {
                     $.ajax({
                         type: "GET",
-                        url: "../other_controller/deletestock.php?did=" + id,
+                        url: "other_controller/deletestock.php?did=" + id,
                         data: data,
                         contentType: false,
                         processData: false,

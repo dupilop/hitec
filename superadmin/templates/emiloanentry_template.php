@@ -15,7 +15,29 @@
       }
     });
   }
-
+  $(document).on("keyup", ".amount", function(e) {
+    e.preventDefault();
+    var lamt = parseFloat($(this).val());
+    $(this).val(lamt);
+    var climit = $.trim($(this).parent().parent().parent().find(".llimit").val());
+    // alert(climit);
+    // alert(lamt);
+    // $(".rlimit").val(rlimit);
+    if(isNaN(lamt)){
+      $(this).val(0);
+      var rlimit = climit;
+      $(".rlimit").val(rlimit);
+    }else{
+    if (lamt > climit) {
+      $(this).val(climit);
+      // alert('asd');
+      $(".rlimit").val(0);
+    } else {
+      var rlimit = climit - lamt;
+      $(".rlimit").val(rlimit);
+    }
+    }
+  });
   $(document).on("click", ".submitloanentry", function(e) {
     e.preventDefault();
     // alert($(this).parent().parent().html());
