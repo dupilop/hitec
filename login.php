@@ -160,20 +160,20 @@
             pb.clear();
             pb.success('<i class="fa fa-sign-in" aria-hidden="true"></i> Welcome, Superadmin');
             setTimeout(function() {
-              window.location.href = 'superadmin/';
+              window.location.href = 'backend/';
             }, 2000);
           } else if ($.trim(data) == 'admin') {
             pb.clear();
             pb.success('<i class="fa fa-sign-in" aria-hidden="true"></i> Welcome, Admin');
             setTimeout(function() {
-              window.location.href = 'admin/';
+              window.location.href = 'backend/';
             }, 2000);
           } else if ($.trim(data) == 'staff') {
 
             pb.clear();
             pb.success('<i class="fa fa-sign-in" aria-hidden="true"></i> Welcome, Staff');
             setTimeout(function() {
-              window.location.href = 'staff/';
+              window.location.href = 'backend/';
             }, 2000);
           } else {
             $("#form1")[0].reset();

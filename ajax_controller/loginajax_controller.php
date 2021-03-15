@@ -18,7 +18,8 @@ if (($_POST['action'] == 'login')) {
   if ($total_row > 0) {
     if (password_verify($_POST['password'], $val2['a_password'])) {
       $access_level = $val2['r_name'];
-      $_SESSION[$access_level . 'loggedin'] = true;
+      $_SESSION['access_level'] = $access_level;
+      $_SESSION['superadminloggedin'] = true;
       $_SESSION['id'] = $val2['a_id'];
     }
   }
