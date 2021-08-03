@@ -24,5 +24,5 @@ function sendmessage($tokken, $to, $message)
 if ((isset($_POST['action'])) && $_POST['action'] == 'sendmessage') {
     unset($_POST['action']);
     $send = sendmessage('3b83171c6652431626034ba629539855a8edb93d49b058738367a07956978dda', $_POST['num'], $_POST['message']);
-    echo json_encode(array("success" => true, "message" => "Message Sent Successfully"));
-} 
+    echo json_encode(array("success" => true, "message" => "Message Sent Successfully", "log" => $send));
+}

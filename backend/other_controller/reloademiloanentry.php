@@ -4,40 +4,40 @@ session_start();
 ?>
 
 <script type="text/javascript">
-  var total = 0;
+    var total = 0;
 </script>
 
 <style type="text/css">
-  .center {
-    position: absolute;
-    left: 70%;
-    width: 100px;
+    .center {
+        position: absolute;
+        left: 70%;
+        width: 100px;
 
 
 
-  }
+    }
 </style>
 
 
 <?php
 if ($_SESSION['access_level'] == 'superadmin') {
-  $asd = $pdo->prepare("SELECT * FROM customers
+    $asd = $pdo->prepare("SELECT * FROM customers
             ");
-  $asd->execute();
+    $asd->execute();
 } else if ($_SESSION['access_level'] == 'admin') {
-  $asd = $pdo->prepare("SELECT * FROM customers c
+    $asd = $pdo->prepare("SELECT * FROM customers c
             INNER JOIN admins a ON a.a_id=c.c_created_by 
             INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id WHERE c.c_created_by=:cby || ra.ras_parent_id=:upby
             ");
-  $asd->execute(['cby' => $_SESSION['id'], 'upby' =>  $_SESSION['id']]);
+    $asd->execute(['cby' => $_SESSION['id'], 'upby' =>  $_SESSION['id']]);
 } else if ($_SESSION['access_level'] == 'staff') {
-  $asd = $pdo->prepare("SELECT * FROM customers c
+    $asd = $pdo->prepare("SELECT * FROM customers c
             INNER JOIN admins a ON a.a_id=c.c_created_by 
             INNER JOIN roles_assign ra ON ra.ras_a_id=a.a_id WHERE c.c_created_by=:cby
             ");
-  $asd->execute(['cby' => $_SESSION['id']]);
+    $asd->execute(['cby' => $_SESSION['id']]);
 } else {
-  echo 'error';
+    echo 'error';
 }
 echo '<table class="table table-bordered table-striped table-hover table-sm display nowrap" id="example" name="example" width="100%" cellspacing="0">';
 
@@ -64,27 +64,27 @@ echo '<thead class="thead-dark">
 
 
 foreach ($asd as $a) {
-  $cu1 = $pdo->prepare("SELECT SUM(l_remaining_loan) FROM loans WHERE l_c_id=:cid AND l_status=:lstatus");
-  $cu1->execute(['cid' => $a['c_id'], 'lstatus' => 'unpaid']);
-  $cu2 = $cu1->fetch();
+    $cu1 = $pdo->prepare("SELECT SUM(l_remaining_loan) FROM loans WHERE l_c_id=:cid AND l_status=:lstatus");
+    $cu1->execute(['cid' => $a['c_id'], 'lstatus' => 'unpaid']);
+    $cu2 = $cu1->fetch();
 
-  echo '<tr>';
-  if ($a['c_photo'] != '') {
-    echo '<td><a href="../images/customers/' . $a['c_photo'] . '"><img style="border-radius: 50%;" height="50px" width="50px" src="../images/customers/' . $a['c_photo'] . '"></a></td>';
-  } else {
-    echo '<td><img style="border-radius: 50%;" height="50px" width="50px" src="../images/noimage.jpg"></a></td>';
-  }
-  echo '<td>' . $a['c_number'] . '</td>';
-  echo '<td id="name' . $a['c_id'] . '">' . $a['c_name'] . '</td>';
+    echo '<tr>';
+    if ($a['c_photo'] != '') {
+        echo '<td><a href="../images/customers/' . $a['c_photo'] . '"><img style="border-radius: 50%;" height="50px" width="50px" src="../images/customers/' . $a['c_photo'] . '"></a></td>';
+    } else {
+        echo '<td><img style="border-radius: 50%;" height="50px" width="50px" src="../images/noimage.jpg"></a></td>';
+    }
+    echo '<td>' . $a['c_number'] . '</td>';
+    echo '<td id="name' . $a['c_id'] . '">' . $a['c_name'] . '</td>';
 
-  echo '<td id="occu' . $a['c_id'] . '">' . $a['c_occupation'] . '</td>';
-  echo '<td id="mob' . $a['c_id'] . '">' . $a['c_mobile'] . '</td>';
-  echo '<td id="ema' . $a['c_id'] . '">' . $a['c_email'] . '</td>';
-  echo '<td id="off' . $a['c_id'] . '">' . $a['c_office'] . '</td>';
-  $lcid = $a['c_id'];
+    echo '<td id="occu' . $a['c_id'] . '">' . $a['c_occupation'] . '</td>';
+    echo '<td id="mob' . $a['c_id'] . '">' . $a['c_mobile'] . '</td>';
+    echo '<td id="ema' . $a['c_id'] . '">' . $a['c_email'] . '</td>';
+    echo '<td id="off' . $a['c_id'] . '">' . $a['c_office'] . '</td>';
+    $lcid = $a['c_id'];
 
 
-  echo '<td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#mod' . $a['c_id'] . '"><i class="fa fa-plus"></i></button>
+    echo '<td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#mod' . $a['c_id'] . '"><i class="fa fa-plus"></i></button>
                       
                       
 
@@ -143,6 +143,13 @@ foreach ($asd as $a) {
                                             <div class="schargepererror"></div>
                                         </div>
                                         <div class="field item form-group">
+                                            <label class="col-form-label col-md-4 col-sm-3  label-align">Add Service Charge to Principal<span class="required">*</span></label>
+                                            <div class="col-md-6 col-sm-6">
+                                                <input class="addservice" type="checkbox" id="addservice"/>   Yes
+                                            </div>
+                                            <div class="schargepererror"></div>
+                                        </div>
+                                        <div class="field item form-group">
                                             <label class="col-form-label col-md-4 col-sm-3  label-align">Service Charge</label>
                                             <div class="col-md-6 col-sm-6">
                                                 <input class="form-control-plaintext servchargeamt" name="l_service_charge" readonly onkeypress="return onlyNumberKey(event)"  type="text"  />
@@ -152,13 +159,13 @@ foreach ($asd as $a) {
                                         <div class="field item form-group">
                                             <label class="col-form-label col-md-4 col-sm-3  label-align">Credit Limitations<span class="required">*</span></label>
                                             <div class="col-md-6 col-sm-6">';
-                                            if($a['c_limitations']>$cu2[0]){
-                                                  $clim = $a['c_limitations'] - $cu2[0];
-                                            }else{
-                                                $clim = 0;
-                                            }
-  echo '<input class="form-control-plaintext llimit" readonly onkeypress="return onlyNumberKey(event)" value="' . $clim . '" type="text" />';
-  echo '</div>
+    if ($a['c_limitations'] > $cu2[0]) {
+        $clim = $a['c_limitations'] - $cu2[0];
+    } else {
+        $clim = 0;
+    }
+    echo '<input class="form-control-plaintext llimit" readonly onkeypress="return onlyNumberKey(event)" value="' . $clim . '" type="text" />';
+    echo '</div>
                                             <div class="lperioderror"></div>
                                         </div>
                                         
@@ -181,7 +188,7 @@ foreach ($asd as $a) {
                   </div>
                   </td>';
 
-  echo '</tr>';
+    echo '</tr>';
 }
 
 
@@ -189,84 +196,84 @@ echo '</tbody>
                 </table>';
 ?>
 <script type="text/javascript">
-  function onlyNumberKey(evt) {
+    function onlyNumberKey(evt) {
 
-    // Only ASCII charactar in that range allowed 
-    var ASCIICode = (evt.which) ? evt.which : evt.keyCode
-    if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
-      return false;
-    return true;
-  }
+        // Only ASCII charactar in that range allowed 
+        var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+            return false;
+        return true;
+    }
 </script>
 <script type="text/javascript">
-  var table2 = $('#example').DataTable({
+    var table2 = $('#example').DataTable({
 
-    lengthMenu: [
-      [10, 25, 50, 100, -1],
-      [10, 25, 50, 100, "All"]
-    ],
-    orderCellsTop: true,
-    fixedHeader: true,
-    dom: "<'row'<'col-sm-4'B><'col-sm-4 text-center'l><'col-sm-4'f>>" +
-      "<'row'<'col-sm-12'tr>>" +
-      "<'row'<'col-sm-6'i><'col-sm-6'p>>",
-    buttons: [{
-        extend: 'copy',
-        text: '<i class="fa fa-copy"></i>',
-        titleAttr: 'COPY'
-      }, {
-        extend: 'print',
-        text: '<i class="fa fa-print"></i>',
-        title: $('h1').text(),
-        titleAttr: 'Print',
-        exportOptions: {
-          columns: ':not(.no-print)'
-        },
-        footer: true,
-        autoPrint: false,
-        exportOptions: {
-          columns: "thead th:not(.noExport)"
-        },
-        customize: function(win) {
-          $(win.document.body)
-            .css('background', 'white')
-        }
-      }, {
-        extend: 'pdf',
-        text: '<i class="fa fa-file-pdf-o"></i>',
-        title: $('h1').text(),
-        titleAttr: 'PDF',
-        exportOptions: {
-          columns: "thead th:not(.noExport)"
-        },
-        footer: true
-      },
-      {
-        extend: 'csv',
-        text: '<i class="fa fa-file-o"></i>',
-        titleAttr: 'CSV',
-        title: $('h1').text(),
-        exportOptions: {
-          columns: "thead th:not(.noExport)"
-        }
-      },
-      {
-        extend: 'excel',
-        titleAttr: 'EXCEL',
-        text: '<i class="fa fa-file-excel-o"></i>',
-        title: $('h1').text(),
-        exportOptions: {
-          columns: "thead th:not(.noExport)"
-        }
-      },
-      {
-        extend: 'colvis',
-        titleAttr: 'Column Visibility',
-        text: '<i class="fa fa-bars"></i>'
-      },
+        lengthMenu: [
+            [10, 25, 50, 100, -1],
+            [10, 25, 50, 100, "All"]
+        ],
+        orderCellsTop: true,
+        fixedHeader: true,
+        dom: "<'row'<'col-sm-4'B><'col-sm-4 text-center'l><'col-sm-4'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'i><'col-sm-6'p>>",
+        buttons: [{
+                extend: 'copy',
+                text: '<i class="fa fa-copy"></i>',
+                titleAttr: 'COPY'
+            }, {
+                extend: 'print',
+                text: '<i class="fa fa-print"></i>',
+                title: $('h1').text(),
+                titleAttr: 'Print',
+                exportOptions: {
+                    columns: ':not(.no-print)'
+                },
+                footer: true,
+                autoPrint: false,
+                exportOptions: {
+                    columns: "thead th:not(.noExport)"
+                },
+                customize: function(win) {
+                    $(win.document.body)
+                        .css('background', 'white')
+                }
+            }, {
+                extend: 'pdf',
+                text: '<i class="fa fa-file-pdf-o"></i>',
+                title: $('h1').text(),
+                titleAttr: 'PDF',
+                exportOptions: {
+                    columns: "thead th:not(.noExport)"
+                },
+                footer: true
+            },
+            {
+                extend: 'csv',
+                text: '<i class="fa fa-file-o"></i>',
+                titleAttr: 'CSV',
+                title: $('h1').text(),
+                exportOptions: {
+                    columns: "thead th:not(.noExport)"
+                }
+            },
+            {
+                extend: 'excel',
+                titleAttr: 'EXCEL',
+                text: '<i class="fa fa-file-excel-o"></i>',
+                title: $('h1').text(),
+                exportOptions: {
+                    columns: "thead th:not(.noExport)"
+                }
+            },
+            {
+                extend: 'colvis',
+                titleAttr: 'Column Visibility',
+                text: '<i class="fa fa-bars"></i>'
+            },
 
-    ],
-    responsive: true
+        ],
+        responsive: true
 
-  });
+    });
 </script>
