@@ -7,83 +7,96 @@ $per = new permission;
 if ($per->permit('p_add_stock', $pdo)) {
 ?>
 
-    <div class="">
+    <!-- <div class=""> -->
 
-        <div class="clearfix"></div>
+    <div class="clearfix"></div>
 
-        <div class="row">
-            <div class="col-md-12 col-sm-12">
-                <div class="x_panel">
-                    <div class="x_title">
-                        <h2>Stock Details</h2>
-                        <ul class="nav navbar-right panel_toolbox">
-                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="#">Settings 1</a>
-                                    <a class="dropdown-item" href="#">Settings 2</a>
-                                </div>
-                            </li>
-                            <li><a class="close-link"><i class="fa fa-close"></i></a>
-                            </li>
-                        </ul>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <form class="" action="" method="post" id="form1" novalidate>
-
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Description<span class="required">*</span></label>
-                                <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" id="desc" name="st_desc" />
-                                </div>
-                                <div class="descerror"></div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Stock Details</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#">Settings 1</a>
+                                <a class="dropdown-item" href="#">Settings 2</a>
                             </div>
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Model No<span class="required">*</span></label>
-                                <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" id="modelno" name="st_model_no" />
-                                </div>
-                                <div class="modelnoerror"></div>
+                        </li>
+                        <li><a class="close-link"><i class="fa fa-close"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <form class="" action="" method="post" id="form1" novalidate>
+
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-3 col-sm-3  label-align">Description<span class="required">*</span></label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" id="desc" name="st_desc" />
                             </div>
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Price<span class="required">*</span></label>
-                                <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" id="price" name="st_price" type="text" />
-                                </div>
-                                <div class="priceerror"></div>
+                            <div class="descerror"></div>
+                        </div>
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-3 col-sm-3  label-align">Model No<span class="required">*</span></label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" id="modelno" name="st_model_no" />
                             </div>
-
-
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Purchase Date<span class="required">*</span></label>
-                                <div class="col-md-6 col-sm-6">
-                                    <input class="form-control" id="pdate" type="date" name="st_date">
-                                </div>
-                                <div class="pdateerror"></div>
+                            <div class="modelnoerror"></div>
+                        </div>
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-3 col-sm-3  label-align">Price<span class="required">*</span></label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" id="price" name="st_price" type="text" />
                             </div>
+                            <div class="priceerror"></div>
+                        </div>
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-3 col-sm-3  label-align">Quantity<span class="required">*</span></label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" id="qty" name="st_qty" type="number" />
+                            </div>
+                            <div class="priceerror"></div>
+                        </div>
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-3 col-sm-3  label-align">Image<span class="required">*</span></label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" id="image" name="st_image" type="file" />
+                            </div>
+                            <div class="priceerror"></div>
+                        </div>
+
+                        <div class="field item form-group">
+                            <label class="col-form-label col-md-3 col-sm-3  label-align">Purchase Date<span class="required">*</span></label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" id="pdate" type="date" name="st_date">
+                            </div>
+                            <div class="pdateerror"></div>
+                        </div>
 
 
 
 
 
-                            <div class="ln_solid">
-                                <div class="form-group">
-                                    <div class="col-md-6 offset-md-3">
-                                        <input type="hidden" readonly name="st_created_by" value="<?php echo $userid;  ?>">
-                                        <button type='submit' id="add" name="add" class="btn btn-primary add">Add</button>
-                                        <button type='reset' class="btn btn-success">Reset</button>
-                                    </div>
+                        <div class="ln_solid">
+                            <div class="form-group">
+                                <div class="col-md-6 offset-md-3">
+                                    <input type="hidden" readonly name="st_created_by" value="<?php echo $userid;  ?>">
+                                    <button type='submit' id="add" name="add" class="btn btn-primary add">Add</button>
+                                    <button type='reset' class="btn btn-success">Reset</button>
                                 </div>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+    <!-- </div> -->
 <?php }
 ?>
 <script>

@@ -1,3 +1,3 @@
 <?php
-	$title = 'Salary Sheet Entry';
-	$content = loadTemplate('templates/salarysheetentry_template.php', []);
+$title = 'Salary Sheet Entry';
+$content = loadTemplate('templates/salarysheet_template.php', []);

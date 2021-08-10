@@ -138,7 +138,7 @@ if ($rc1 > 0) {
         echo '<td>' . $a['c_number'] . '</td>';
         echo '<td>' . $a['ms_amount'] . '</td>';
         echo '<td>' . $a['ms_withdraw_amount'] . '</td>';
-        $totsaving = $a['ms_amount'] + $a['ms_previous_saving'] - $a['ms_withdraw_amount'];
+        $totsaving = $a['ms_amount'] - $a['ms_withdraw_amount'];
         echo '<td>' . $totsaving . '</td>';
 
         echo '</tr>';
@@ -215,7 +215,7 @@ if ($rc2 > 0) {
         echo '<td>' . $a2['l_amount'] . '</td>';
         echo '<td>' . $a2['l_down_payment'] . '</td>';
         echo '<td>' . $a2['l_service_charge'] . '</td>';
-        $totpay = $a2['l_down_payment'] + $a2['l_service_charge'];
+        $totpay = $a2['l_amount'] - $a2['l_down_payment'] + $a2['l_service_charge'];
         echo '<td>' . $totpay . '</td>';
 
         echo '</tr>';
@@ -335,7 +335,7 @@ if ($rc4 > 0) {
                             <th>Customer Name</th>
                             <th>Account Number</th>
                             <th>Loan Amount</th>
-                            <th>Remaining Loan</th>
+                            <th>Down Payment</th>
                             <th>Service Charge</th>
                             <th>Total</th>
 
@@ -364,9 +364,9 @@ if ($rc4 > 0) {
         echo '<td>' . $a4['c_name'] . '</td>';
         echo '<td>' . $a4['c_number'] . '</td>';
         echo '<td>' . $a4['l_amount'] . '</td>';
-        echo '<td>' . $a4['l_remaining_loan'] . '</td>';
+        echo '<td>' . $a4['l_down_payment'] . '</td>';
         echo '<td>' . $a4['l_service_charge'] . '</td>';
-        $totpay4 = $a4['l_amount'] - $a4['l_remaining_loan'] + $a4['l_down_payment'] + $a4['l_service_charge'];
+        $totpay4 = $a4['l_amount'] - $a4['l_down_payment'] + $a4['l_service_charge'];
         echo '<td>' . $totpay4 . '</td>';
 
         echo '</tr>';
@@ -468,7 +468,112 @@ if ($rc1 == '' && $rc2 == '' && $rc3 == '' && $rc4 == '' && $rc5 == '') {
             lengthMenu: [
                 [10, 25, 50, 100, -1],
                 [10, 25, 50, 100, "All"]
-            ]
+            ],
+            dom: "<'row'<'col-sm-4'B><'col-sm-4 text-center'l><'col-sm-4'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-6'i><'col-sm-6'p>>",
+            buttons: [{
+                    extend: 'copy',
+                    text: '<i class="fa fa-copy"></i>',
+                    titleAttr: 'COPY'
+                }, {
+                    extend: 'print',
+
+                    text: '<i class="fa fa-print"></i>',
+                    title: '<div style="text-align:center;"><img src="../images/logo/a.png" height="100px" width="100px" alt="image" style="position:absolute;left:45%;"><br /><br /></div><div style="text-align:center;" id="head"><h1>HITEC VISION PVT. LTD</h2></div><div style="text-align:center;font-size:15px;color:black;" id="pdate"><b>Printed Date: <?php echo date("Y-m-d");  ?></b><br /></div>',
+
+                    titleAttr: 'Print',
+                    // footer: true,
+                    // autoPrint: true,
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)",
+                    },
+
+                }, {
+                    extend: 'pdf',
+                    text: '<i class="fa fa-file-pdf-o"></i>',
+                    title: $('h1').text(),
+                    titleAttr: 'PDF',
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    },
+                    footer: true
+                },
+                {
+                    extend: 'csv',
+                    text: '<i class="fa fa-file-o"></i>',
+                    titleAttr: 'CSV',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'excel',
+                    titleAttr: 'EXCEL',
+                    text: '<i class="fa fa-file-excel-o"></i>',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'colvis',
+                    titleAttr: 'Column Visibility',
+                    text: '<i class="fa fa-bars"></i>'
+                },
+
+            ],
+            "footerCallback": function(row, data, start, end, display) {
+                var api = this.api(),
+                    data;
+
+                var intVal = function(i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i : 0;
+                };
+
+
+
+                total1 = api
+                    .column(2, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(2).footer()).html(
+                    'Rs.' + total1
+                );
+                total2 = api
+                    .column(3, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(3).footer()).html(
+                    'Rs.' + total2
+                );
+                total3 = api
+                    .column(4, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(4).footer()).html(
+                    'Rs.' + total3
+                );
+            }
 
         });
         var table2 = $('#t2').DataTable({
@@ -476,7 +581,124 @@ if ($rc1 == '' && $rc2 == '' && $rc3 == '' && $rc4 == '' && $rc5 == '') {
             lengthMenu: [
                 [10, 25, 50, 100, -1],
                 [10, 25, 50, 100, "All"]
-            ]
+            ],
+            dom: "<'row'<'col-sm-4'B><'col-sm-4 text-center'l><'col-sm-4'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-6'i><'col-sm-6'p>>",
+            buttons: [{
+                    extend: 'copy',
+                    text: '<i class="fa fa-copy"></i>',
+                    titleAttr: 'COPY'
+                }, {
+                    extend: 'print',
+
+                    text: '<i class="fa fa-print"></i>',
+                    title: '<div style="text-align:center;"><img src="../images/logo/a.png" height="100px" width="100px" alt="image" style="position:absolute;left:45%;"><br /><br /></div><div style="text-align:center;" id="head"><h1>HITEC VISION PVT. LTD</h2></div><div style="text-align:center;font-size:15px;color:black;" id="pdate"><b>Printed Date: <?php echo date("Y-m-d");  ?></b><br /></div>',
+
+                    titleAttr: 'Print',
+                    // footer: true,
+                    // autoPrint: true,
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)",
+                    },
+
+                }, {
+                    extend: 'pdf',
+                    text: '<i class="fa fa-file-pdf-o"></i>',
+                    title: $('h1').text(),
+                    titleAttr: 'PDF',
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    },
+                    footer: true
+                },
+                {
+                    extend: 'csv',
+                    text: '<i class="fa fa-file-o"></i>',
+                    titleAttr: 'CSV',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'excel',
+                    titleAttr: 'EXCEL',
+                    text: '<i class="fa fa-file-excel-o"></i>',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'colvis',
+                    titleAttr: 'Column Visibility',
+                    text: '<i class="fa fa-bars"></i>'
+                },
+
+            ],
+            "footerCallback": function(row, data, start, end, display) {
+                var api = this.api(),
+                    data;
+
+                var intVal = function(i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i : 0;
+                };
+
+
+
+                total1 = api
+                    .column(2, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(2).footer()).html(
+                    'Rs.' + total1
+                );
+                total2 = api
+                    .column(3, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(3).footer()).html(
+                    'Rs.' + total2
+                );
+                total3 = api
+                    .column(4, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(4).footer()).html(
+                    'Rs.' + total3
+                );
+                total4 = api
+                    .column(5, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(5).footer()).html(
+                    'Rs.' + total4
+                );
+            }
 
         });
         var table3 = $('#t3').DataTable({
@@ -484,7 +706,124 @@ if ($rc1 == '' && $rc2 == '' && $rc3 == '' && $rc4 == '' && $rc5 == '') {
             lengthMenu: [
                 [10, 25, 50, 100, -1],
                 [10, 25, 50, 100, "All"]
-            ]
+            ],
+            dom: "<'row'<'col-sm-4'B><'col-sm-4 text-center'l><'col-sm-4'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-6'i><'col-sm-6'p>>",
+            buttons: [{
+                    extend: 'copy',
+                    text: '<i class="fa fa-copy"></i>',
+                    titleAttr: 'COPY'
+                }, {
+                    extend: 'print',
+
+                    text: '<i class="fa fa-print"></i>',
+                    title: '<div style="text-align:center;"><img src="../images/logo/a.png" height="100px" width="100px" alt="image" style="position:absolute;left:45%;"><br /><br /></div><div style="text-align:center;" id="head"><h1>HITEC VISION PVT. LTD</h2></div><div style="text-align:center;font-size:15px;color:black;" id="pdate"><b>Printed Date: <?php echo date("Y-m-d");  ?></b><br /></div>',
+
+                    titleAttr: 'Print',
+                    // footer: true,
+                    // autoPrint: true,
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)",
+                    },
+
+                }, {
+                    extend: 'pdf',
+                    text: '<i class="fa fa-file-pdf-o"></i>',
+                    title: $('h1').text(),
+                    titleAttr: 'PDF',
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    },
+                    footer: true
+                },
+                {
+                    extend: 'csv',
+                    text: '<i class="fa fa-file-o"></i>',
+                    titleAttr: 'CSV',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'excel',
+                    titleAttr: 'EXCEL',
+                    text: '<i class="fa fa-file-excel-o"></i>',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'colvis',
+                    titleAttr: 'Column Visibility',
+                    text: '<i class="fa fa-bars"></i>'
+                },
+
+            ],
+            "footerCallback": function(row, data, start, end, display) {
+                var api = this.api(),
+                    data;
+
+                var intVal = function(i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i : 0;
+                };
+
+
+
+                total1 = api
+                    .column(2, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(2).footer()).html(
+                    'Rs.' + total1
+                );
+                total2 = api
+                    .column(3, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(3).footer()).html(
+                    'Rs.' + total2
+                );
+                total3 = api
+                    .column(4, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(4).footer()).html(
+                    'Rs.' + total3
+                );
+                total4 = api
+                    .column(5, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(5).footer()).html(
+                    'Rs.' + total4
+                );
+            }
 
         });
         var table4 = $('#t4').DataTable({
@@ -492,7 +831,124 @@ if ($rc1 == '' && $rc2 == '' && $rc3 == '' && $rc4 == '' && $rc5 == '') {
             lengthMenu: [
                 [10, 25, 50, 100, -1],
                 [10, 25, 50, 100, "All"]
-            ]
+            ],
+            dom: "<'row'<'col-sm-4'B><'col-sm-4 text-center'l><'col-sm-4'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-6'i><'col-sm-6'p>>",
+            buttons: [{
+                    extend: 'copy',
+                    text: '<i class="fa fa-copy"></i>',
+                    titleAttr: 'COPY'
+                }, {
+                    extend: 'print',
+
+                    text: '<i class="fa fa-print"></i>',
+                    title: '<div style="text-align:center;"><img src="../images/logo/a.png" height="100px" width="100px" alt="image" style="position:absolute;left:45%;"><br /><br /></div><div style="text-align:center;" id="head"><h1>HITEC VISION PVT. LTD</h2></div><div style="text-align:center;font-size:15px;color:black;" id="pdate"><b>Printed Date: <?php echo date("Y-m-d");  ?></b><br /></div>',
+
+                    titleAttr: 'Print',
+                    // footer: true,
+                    // autoPrint: true,
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)",
+                    },
+
+                }, {
+                    extend: 'pdf',
+                    text: '<i class="fa fa-file-pdf-o"></i>',
+                    title: $('h1').text(),
+                    titleAttr: 'PDF',
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    },
+                    footer: true
+                },
+                {
+                    extend: 'csv',
+                    text: '<i class="fa fa-file-o"></i>',
+                    titleAttr: 'CSV',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'excel',
+                    titleAttr: 'EXCEL',
+                    text: '<i class="fa fa-file-excel-o"></i>',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'colvis',
+                    titleAttr: 'Column Visibility',
+                    text: '<i class="fa fa-bars"></i>'
+                },
+
+            ],
+            "footerCallback": function(row, data, start, end, display) {
+                var api = this.api(),
+                    data;
+
+                var intVal = function(i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i : 0;
+                };
+
+
+
+                total1 = api
+                    .column(2, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(2).footer()).html(
+                    'Rs.' + total1
+                );
+                total2 = api
+                    .column(3, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(3).footer()).html(
+                    'Rs.' + total2
+                );
+                total3 = api
+                    .column(4, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(4).footer()).html(
+                    'Rs.' + total3
+                );
+                total4 = api
+                    .column(5, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(5).footer()).html(
+                    'Rs.' + total4
+                );
+            }
 
         });
         var table5 = $('#t5').DataTable({
@@ -500,43 +956,126 @@ if ($rc1 == '' && $rc2 == '' && $rc3 == '' && $rc4 == '' && $rc5 == '') {
             lengthMenu: [
                 [10, 25, 50, 100, -1],
                 [10, 25, 50, 100, "All"]
-            ]
+            ],
+            dom: "<'row'<'col-sm-4'B><'col-sm-4 text-center'l><'col-sm-4'f>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-6'i><'col-sm-6'p>>",
+            buttons: [{
+                    extend: 'copy',
+                    text: '<i class="fa fa-copy"></i>',
+                    titleAttr: 'COPY'
+                }, {
+                    extend: 'print',
+
+                    text: '<i class="fa fa-print"></i>',
+                    title: '<div style="text-align:center;"><img src="../images/logo/a.png" height="100px" width="100px" alt="image" style="position:absolute;left:45%;"><br /><br /></div><div style="text-align:center;" id="head"><h1>HITEC VISION PVT. LTD</h2></div><div style="text-align:center;font-size:15px;color:black;" id="pdate"><b>Printed Date: <?php echo date("Y-m-d");  ?></b><br /></div>',
+
+                    titleAttr: 'Print',
+                    // footer: true,
+                    // autoPrint: true,
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)",
+                    },
+
+                }, {
+                    extend: 'pdf',
+                    text: '<i class="fa fa-file-pdf-o"></i>',
+                    title: $('h1').text(),
+                    titleAttr: 'PDF',
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    },
+                    footer: true
+                },
+                {
+                    extend: 'csv',
+                    text: '<i class="fa fa-file-o"></i>',
+                    titleAttr: 'CSV',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'excel',
+                    titleAttr: 'EXCEL',
+                    text: '<i class="fa fa-file-excel-o"></i>',
+                    title: $('h1').text(),
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    }
+                },
+                {
+                    extend: 'colvis',
+                    titleAttr: 'Column Visibility',
+                    text: '<i class="fa fa-bars"></i>'
+                },
+
+            ],
+            "footerCallback": function(row, data, start, end, display) {
+                var api = this.api(),
+                    data;
+
+                var intVal = function(i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i : 0;
+                };
+
+
+
+                total1 = api
+                    .column(5, {
+                        page: 'current'
+                    })
+                    .data()
+                    .reduce(function(a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                $(api.column(5).footer()).html(
+                    'Rs.' + total1
+                );
+
+
+            }
 
         });
-        MergeGridCells();
+        // MergeGridCells();
 
-        function MergeGridCells() {
-            var dimension_cells = new Array();
-            var dimension_col = null;
-            var columnCount = $(".example tr:first th").length;
-            for (dimension_col = 0; dimension_col < columnCount; dimension_col++) {
-                // first_instance holds the first instance of identical td
-                var first_instance = null;
-                var rowspan = 1;
-                // iterate through rows
-                $(".example").find('tr').each(function() {
+        // function MergeGridCells() {
+        //     var dimension_cells = new Array();
+        //     var dimension_col = null;
+        //     var columnCount = $(".example tr:first th").length;
+        //     for (dimension_col = 0; dimension_col < columnCount; dimension_col++) {
+        //         // first_instance holds the first instance of identical td
+        //         var first_instance = null;
+        //         var rowspan = 1;
+        //         // iterate through rows
+        //         $(".example").find('tr').each(function() {
 
-                    // find the td of the correct column (determined by the dimension_col set above)
-                    var dimension_td = $(this).find('td:nth-child(' + dimension_col + ')');
+        //             // find the td of the correct column (determined by the dimension_col set above)
+        //             var dimension_td = $(this).find('td:nth-child(' + dimension_col + ')');
 
-                    if (first_instance == null) {
-                        // must be the first row
-                        first_instance = dimension_td;
-                    } else if (dimension_td.text() == first_instance.text()) {
-                        // the current td is identical to the previous
-                        // remove the current td
-                        dimension_td.remove();
-                        ++rowspan;
-                        // increment the rowspan attribute of the first instance
-                        first_instance.attr('rowspan', rowspan);
-                    } else {
-                        // this cell is different from the last
-                        first_instance = dimension_td;
-                        rowspan = 1;
-                    }
-                });
-            }
-        }
+        //             if (first_instance == null) {
+        //                 // must be the first row
+        //                 first_instance = dimension_td;
+        //             } else if (dimension_td.text() == first_instance.text()) {
+        //                 // the current td is identical to the previous
+        //                 // remove the current td
+        //                 dimension_td.remove();
+        //                 ++rowspan;
+        //                 // increment the rowspan attribute of the first instance
+        //                 first_instance.attr('rowspan', rowspan);
+        //             } else {
+        //                 // this cell is different from the last
+        //                 first_instance = dimension_td;
+        //                 rowspan = 1;
+        //             }
+        //         });
+        //     }
+        // }
 
 
 

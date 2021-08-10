@@ -4,7 +4,7 @@ if (!(isset($_SESSION['superadminloggedin']) && $_SESSION['superadminloggedin'] 
     header('Location: ../login.php');
 }
 require_once './other_controller/permission_controller.php';
-require '../db/connect.php';
+include '../db/connect.php';
 $per = new permission();
 $userid = $_SESSION['id'];
 
@@ -64,8 +64,16 @@ $dat = $abc->fetch();
 
     <!-- Dropify css -->
     <link rel="stylesheet" href="../assets/plugins/dropify/dist/css/dropify.min.css">
-    <!-- Custom Theme Style -->
+    <script src="./../config.js"></script>
+    <!-- Custom Theme Style 
+        -->
     <link href="../build/css/custom.min.css" rel="stylesheet">
+    <style>
+        .dropify-wrapper .dropify-message p {
+            margin: 11px 0 0;
+            font-size: 2rem;
+        }
+    </style>
 </head>
 
 <body class="nav-md">
@@ -100,17 +108,15 @@ $dat = $abc->fetch();
                                 <li><a href="index"><i class="fa fa-home"></i> Dashboard</a>
 
                                 </li>
-                                <li><a><i class="fa fa-users" aria-hidden="true"></i> Company <span class="fa fa-chevron-down"></span></a>
+                                <li><a><i class="fa fa-users" aria-hidden="true"></i> Customers <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
                                         <?php
 
                                         if ($per->permit('p_add_customer', $pdo)) {
                                             echo '<li><a href="registration">Registration</a></li>';
                                         }
-                                        echo '
-                    
-                    <li><a href="viewcustomer">View Customer</a></li>
-                    <li><a href="stocks">Stocks</a></li>';
+                                        echo '<li><a href="viewcustomer">View Customer</a></li>
+                    ';
                                         ?>
                                     </ul>
                                 </li>
@@ -118,10 +124,10 @@ $dat = $abc->fetch();
                                     <ul class="nav child_menu">
                                         <?php
                                         if ($per->permit('p_make_save', $pdo)) {
-                                            echo '<li><a href="masiksavings">Make a save</a></li>';
+                                            echo '<li><a href="masiksavings">Saving Entry</a></li>';
                                         }
                                         if ($per->permit('p_undosave', $pdo)) {
-                                            echo '<li><a href="masiksavingscheckup">Savings Checkup</a></li>';
+                                            echo '<li><a href="masiksavingscheckup">Saving Roll Back</a></li>';
                                         }
                                         ?>
 
@@ -132,6 +138,9 @@ $dat = $abc->fetch();
                                         <?php
                                         if ($per->permit('p_emicalculator', $pdo)) {
                                             echo '<li><a href="emicalculator">EMI Calculator</a></li>';
+                                        }
+                                        if ($_SESSION['access_level'] == 'superadmin') {
+                                            echo '<li><a href="loans">Loans</a></li>';
                                         }
                                         if ($per->permit('p_loanentry', $pdo)) {
                                             echo '<li><a href="emiloanentry">EMI Loan Entry</a></li>';
@@ -161,11 +170,20 @@ $dat = $abc->fetch();
                                         if ($per->permit('p_emireport', $pdo)) {
                                             echo '<li><a href="loanpaymentreport"> EMI Payment Report</a></li>';
                                         }
+                                        if ($_SESSION['access_level'] == 'superadmin') {
+                                            echo '<li><a href="loanreports">Loans Report</a></li>';
+                                        }
+                                        if ($per->permit('p_emireport', $pdo)) {
+                                            echo '<li><a href="loansettlementreport"> EMI Settlement Report</a></li>';
+                                        }
                                         if ($per->permit('p_customerreport', $pdo)) {
                                             echo '<li><a href="customerreport">Customer Report</a></li>';
                                         }
                                         if ($_SESSION['access_level'] == 'superadmin') {
                                             echo '<li><a href="accountwisereport">Account Wise Report</a></li>';
+                                        }
+                                        if ($_SESSION['access_level'] == 'superadmin') {
+                                            echo '<li><a href="customerwisereport">Customer Wise Report</a></li>';
                                         }
                                         ?>
 
@@ -179,6 +197,9 @@ $dat = $abc->fetch();
                                         <?php
                                         if ($_SESSION['access_level'] == 'superadmin') {
                                             echo '<li><a href="penaltynotice"> Penalty Notice</a></li>';
+                                        }
+                                        if ($_SESSION['access_level'] == 'superadmin') {
+                                            echo '<li><a href="bulksms">Bulk SMS</a></li>';
                                         }
                                         ?>
 
@@ -203,12 +224,23 @@ $dat = $abc->fetch();
                                         if ($_SESSION['access_level'] == 'superadmin') {
                                             echo '<li><a href="permission">Permission Management</a></li>';
                                         }
-                                        if ($_SESSION['access_level'] == 'superadmin') {
-                                            echo '<li><a href="bulksms">Bulk SMS</a></li>';
-                                        }
+                                        ?>
+
+
+
+                                    </ul>
+                                </li>
+                                <li><a><i class="fa fa-wpexplorer" aria-hidden="true"></i>Extra <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <?php
+
                                         if ($per->permit('p_viewsalary', $pdo)) {
                                             echo '<li><a href="salarysheetentry">Salary Sheet</a></li>';
                                         }
+                                        if ($_SESSION['access_level'] == 'superadmin') {
+                                            echo '<li><a href="stocks">Stocks</a></li>';
+                                        }
+
                                         ?>
 
 
@@ -363,7 +395,7 @@ $dat = $abc->fetch();
     <script type="text/javascript">
         var cc = 0;
         loading_data2();
-        setInterval(loading_data, 1000);
+        // setInterval(loading_data, 1000);
 
         function loading_data() {
             $.ajax({
@@ -397,6 +429,47 @@ $dat = $abc->fetch();
                 }
             });
         }
+    </script>
+    <script src="../assets/plugins/dropify/dist/js/dropify.min.js"></script>
+    <script>
+        // Basic
+        $('.dropify').dropify();
+
+        // Translated
+        $('.dropify-fr').dropify({
+            messages: {
+                default: 'Glissez-déposez un fichier ici ou cliquez',
+                replace: 'Glissez-déposez un fichier ou cliquez pour remplacer',
+                remove: 'Supprimer',
+                error: 'Désolé, le fichier trop volumineux'
+            }
+        });
+
+        // Used events
+        var drEvent = $('#input-file-events').dropify();
+
+        drEvent.on('dropify.beforeClear', function(event, element) {
+            return confirm("Do you really want to delete \"" + element.file.name + "\" ?");
+        });
+
+        drEvent.on('dropify.afterClear', function(event, element) {
+            alert('File deleted');
+        });
+
+        drEvent.on('dropify.errors', function(event, element) {
+            console.log('Has Errors');
+        });
+
+        var drDestroy = $('#input-file-to-destroy').dropify();
+        drDestroy = drDestroy.data('dropify')
+        $('#toggleDropify').on('click', function(e) {
+            e.preventDefault();
+            if (drDestroy.isDropified()) {
+                drDestroy.destroy();
+            } else {
+                drDestroy.init();
+            }
+        });
     </script>
     <script src="../vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <!-- FastClick -->

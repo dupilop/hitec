@@ -11,11 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
     try {
         if (isset($_SERVER['HTTP_TOKEN']))
             $token = $_SERVER['HTTP_TOKEN'];
-        else
-        {
-        echo json_encode(array("status" => false, "message" => 'Invalid Token'));
-        die();
-
+        else {
+            echo json_encode(array("status" => false, "message" => 'Invalid Token'));
+            die();
         }
         $tab1 = new DatabaseTable('admins');
         $tab2 = new DatabaseTable('roles_assign');
@@ -40,17 +38,18 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
                     ");
                     $asd->execute();
                     // $asd2 = $asd->fetchAll(PDO::FETCH_ASSOC);
-                    foreach($asd as $asd2){
+                    foreach ($asd as $asd2) {
                         $date1 = date_create($asd2['lt_uploaddate']);
                         array_push($arr, [
-                            'date' => date_format($date1,"Y-m-d"),
+                            'date' => date_format($date1, "Y-m-d"),
                             'cname' => $asd2['c_name'],
                             'cnumber' => $asd2['c_number'],
                             'principal' => $asd2['lt_principal'],
                             'discount' => $asd2['lt_discount'],
                             'interest' => $asd2['lt_interest'],
                             'penalty' => $asd2['lt_penalty'],
-                            'totalamount' => $asd2['lt_grand_total']
+                            'totalamount' => $asd2['lt_grand_total'],
+                            'id' => $asd2['lt_id']
                         ]);
                     }
                 } else if ($data3['r_name']  == 'admin') {
@@ -62,11 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
                     ");
                     $asd->execute(['cby' => $data1['a_id'], 'upby' =>  $data1['a_id']]);
                     // $asd2 = $asd->fetchAll(PDO::FETCH_ASSOC);
-                  
-                    foreach($asd as $asd2){
+
+                    foreach ($asd as $asd2) {
                         $date1 = date_create($asd2['lt_uploaddate']);
                         array_push($arr, [
-                            'date' => date_format($date1,"Y-m-d"),
+                            'date' => date_format($date1, "Y-m-d"),
                             'cname' => $asd2['c_name'],
                             'cnumber' => $asd2['c_number'],
                             'principal' => $asd2['lt_principal'],
@@ -85,10 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
                     ");
                     $asd->execute(['cby' => $data1['a_id']]);
                     // $asd2 = $asd->fetchAll(PDO::FETCH_ASSOC);
-                    foreach($asd as $asd2){
+                    foreach ($asd as $asd2) {
                         $date1 = date_create($asd2['lt_uploaddate']);
                         array_push($arr, [
-                            'date' => date_format($date1,"Y-m-d"),
+                            'date' => date_format($date1, "Y-m-d"),
                             'cname' => $asd2['c_name'],
                             'cnumber' => $asd2['c_number'],
                             'principal' => $asd2['lt_principal'],

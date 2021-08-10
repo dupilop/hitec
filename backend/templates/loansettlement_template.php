@@ -11,6 +11,23 @@ if (!$per->permit('p_emisettlement', $pdo)) {
 <div id="reloadentry">
 
 </div>
+<div class="modal fade" id="printmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <button type="button" class="printme">Print</button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body printbody" id="printbody">
+
+            </div>
+
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     loadentry();
 
@@ -25,6 +42,43 @@ if (!$per->permit('p_emisettlement', $pdo)) {
             }
         });
     }
+
+    function printElement(elem) {
+        var domClone = elem.cloneNode(true);
+
+        var $printSection = document.getElementById("printSection");
+
+        if (!$printSection) {
+            var $printSection = document.createElement("div");
+            $printSection.id = "printSection";
+            document.body.appendChild($printSection);
+        }
+
+        $printSection.innerHTML = "";
+        $printSection.appendChild(domClone);
+        window.print();
+    }
+    $(document).on("click", ".printme", function(e) {
+        e.preventDefault();
+        printElement(document.getElementById("invoice"));
+    })
+    $(document).on("click", ".mprint", function(e) {
+        e.preventDefault();
+        var id = $(this).attr("id");
+        $("#printmodal").modal("show");
+        $.ajax({
+            url: "./other_controller/printsettlement.php",
+            method: "POST",
+            data: {
+                id: id
+            },
+            success: function(data) {
+                $("#printbody").html(data);
+
+            }
+        })
+    });
+
     $(document).on("click", ".msettle", function(e) {
         e.preventDefault();
         var id = $(this).attr("id");

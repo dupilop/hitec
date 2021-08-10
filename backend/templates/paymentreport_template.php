@@ -24,37 +24,37 @@ if (!$per->permit('p_savingreport', $pdo)) {
     }
 </style>
 <div class="card">
-            <div class="card-body">
-            <form id="clear">
-                <div class="row">
-                    
-                    <div class="col-md-4 pl-1">
-                        <div class="form-group">
-                            <label>Account Number</label>
-                            <input type="text" id="anumber" name="accountnumber" class="form-control" placeholder="Account Number">
-                        </div>
-                    </div>
-                    <div class="col-md-4 pl-1">
-                        <div class="form-group">
-                            <label>From</label>
-                            <input type="text" id="min-date" class="form-control date-range-filter datepicker" placeholder="From:">
-                        </div>
-                    </div>
-                    <div class="col-md-4 pl-1">
-                        <div class="form-group">
-                            <label>To</label>
-                            <input type="text" id="max-date" class="form-control date-range-filter datepicker"  placeholder="To:">
-                        </div>
+    <div class="card-body">
+        <form id="clear">
+            <div class="row">
+
+                <div class="col-md-4 pl-1">
+                    <div class="form-group">
+                        <label>Account Number</label>
+                        <input type="text" id="anumber" name="accountnumber" class="form-control" placeholder="Account Number">
                     </div>
                 </div>
-                </form>
-                <div class="text-center">
-                <a class="btn btn-success btn-sm filterme" href="#"><i class="fa fa-filter"></i> Filter</a>
-                <a class="btn btn-secondary btn-sm clearfilter" href="#"><i class="fa fa-eraser"></i> Clear Filter</a>
+                <div class="col-md-4 pl-1">
+                    <div class="form-group">
+                        <label>From</label>
+                        <input type="text" id="min-date" class="form-control date-range-filter datepicker" placeholder="From:">
+                    </div>
+                </div>
+                <div class="col-md-4 pl-1">
+                    <div class="form-group">
+                        <label>To</label>
+                        <input type="text" id="max-date" class="form-control date-range-filter datepicker" placeholder="To:">
+                    </div>
                 </div>
             </div>
+        </form>
+        <div class="text-center">
+            <a class="btn btn-success btn-sm filterme" href="#"><i class="fa fa-filter"></i> Filter</a>
+            <a class="btn btn-secondary btn-sm clearfilter" href="#"><i class="fa fa-eraser"></i> Clear Filter</a>
         </div>
-        <hr>
+    </div>
+</div>
+<hr>
 
 
 <?php
@@ -80,38 +80,38 @@ echo '<table class="table table-bordered table-striped table-hover table-sm disp
         <th></th>
         <th></th>
         <th></th>
-      
+
     </tr>
 </tfoot>
 
 <tbody>
 
-  
+
 
 </tbody>
 </table>
 <script type="text/javascript">
- $( function() {
-        $( ".datepicker" ).datepicker();
-        format="yy/dd/mm"
-    } );
+    $(function() {
+        $(".datepicker").datepicker();
+        format = "yy/dd/mm"
+    });
 
-// Bootstrap datepicker
-        $('.input-daterange input').each(function() {
+    // Bootstrap datepicker
+    $('.input-daterange input').each(function() {
         $(this).datepicker('clearDates');
-        });
+    });
     var token = localStorage.getItem('token');
     // alert(token);
     $(document).ready(function() {
 
         var table2 = $('#example').DataTable({
-            
+
             orderCellsTop: true,
             fixedHeader: true,
             responsive: true,
             // lengthChange: false,
             autoWidth: false,
-           
+
             // processing: true,
             ajax: {
                 url: savingpaymentreports,
@@ -138,8 +138,8 @@ echo '<table class="table table-bordered table-striped table-hover table-sm disp
                 {
                     "data": "totalamount"
                 }
-                ],
-                lengthMenu: [
+            ],
+            lengthMenu: [
                 [10, 25, 50, 100, -1],
                 [10, 25, 50, 100, "All"]
             ],
@@ -239,7 +239,7 @@ echo '<table class="table table-bordered table-striped table-hover table-sm disp
                         i : 0;
                 };
 
-                
+
 
                 total1 = api
                     .column(3, {
@@ -278,104 +278,56 @@ echo '<table class="table table-bordered table-striped table-hover table-sm disp
                     'Rs.' + total3
                 );
 
-               
+
             }
 
         });
         // Extend dataTables search
         $.fn.dataTable.ext.search.push(
-        function(settings, data, dataIndex) {
-            var min = $('#min-date').val();
-            var max = $('#max-date').val();
-            var createdAt = data[0] || 0  // Our date column in the table
+            function(settings, data, dataIndex) {
+                var min = $('#min-date').val();
+                var max = $('#max-date').val();
+                var createdAt = data[0] || 0 // Our date column in the table
 
-            if (
-            (min == "" || max == "" ) ||
-                (
-                    moment(createdAt).isSameOrAfter(min) 
-                &&  moment(createdAt).isSameOrBefore(max)
-                 
-                )  
-            ) 
-            {
-            return true;
+                if (
+                    (min == "" || max == "") ||
+                    (
+                        moment(createdAt).isSameOrAfter(min) &&
+                        moment(createdAt).isSameOrBefore(max)
+
+                    )
+                ) {
+                    return true;
+                }
+                return false;
             }
-            return false;
-        }
         );
 
         // Re-draw the table when the a date range filter changes
         $('.filterme').click(function() {
-        table2.draw();
+            table2.draw();
         });
-        $(".clearfilter").click(function(){
+        $(".clearfilter").click(function() {
             $("#clear")[0].reset();
             table2.draw();
         })
 
         $('#ex_filter').hide();
-        // var table_length2 = JSON.stringify(table2.page.info().recordsDisplay);
-        // $("#couu").html('Total Records: ' + table_length2);
 
-        // table2.on('search.dt', function() {
-        //     var table_length2 = JSON.stringify(table2.page.info().recordsDisplay);
-        //     $("#couu").html('Total Records: ' + table_length2);
-
-        // });
-        // $.fn.dataTable.ext.search.push(
-        //     function(settings, data, dataIndex) {
-        //         var min = $('#month').val();
-        //         var type = data[6];
-
-        //         if (min == type || min == '') {
-
-        //             return true;
-        //         }
-        //         return false;
-        //     }
-        // );
-        // $("#monn").val(month.value);
-        // $('#month').change(function() {
-        //     $("#monn").val(this.value);
-        //     table2.draw();
-
-        // });
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
                 var min = $('#anumber').val();
                 var type = data[2];
 
                 if (min == type || min == '') {
-                    
+
                     return true;
                 }
 
                 return false;
             }
         );
-        // $('#year').change(function() {
-        //     $("#yrs").val(this.value);
-        //     table2.draw();
-        // });
-        // $.fn.dataTable.ext.search.push(
-        //     function(settings, data, dataIndex) {
-        //         var min = $('#date').val();
-        //         var type = data[8];
 
-        //         if (min == type || min == '') {
-        //             return true;
-        //         }
-
-        //         return false;
-        //     }
-        // );
-        // $('#date').change(function() {
-        //     $("#dat").val(this.value);
-        //     table2.draw();
-        // });
-        // table2.column(6).visible(false);
-        // table2.column(7).visible(false);
-        // table2.column(8).visible(false);
 
 
     });

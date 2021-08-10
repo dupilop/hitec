@@ -27,6 +27,8 @@ require './config.php';
     <link rel="stylesheet" type="text/css" href="prompt_action/prompt-boxes.min.css">
     <!-- Custom Theme Style -->
     <link href="./build/css/custom.min.css" rel="stylesheet">
+    <script src="./config.js"></script>
+
 </head>
 
 <body class="login">

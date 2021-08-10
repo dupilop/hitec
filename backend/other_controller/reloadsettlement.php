@@ -84,7 +84,8 @@ foreach ($asd as $a) {
 
 
     echo '<td><button type="button" class="btn btn-outline-warning btn-sm msettle" id="' . $a['l_id'] . '">Make a settlement</button>
-                      
+    <button type="button" class="btn btn-outline-secondary btn-sm mprint" id="' . $a['l_id'] . '"><i class="fa fa-print" aria-hidden="true"></i>
+    </button>
                       
 
                 

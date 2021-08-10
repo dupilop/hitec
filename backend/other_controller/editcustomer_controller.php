@@ -1,11 +1,13 @@
 <?php
 require "../../db/connect.php";  //include the DB config file
 require '../../classes/databasetable.php';
+require '../../config.php';
 $abc = new DatabaseTable('customers');
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 if (isset($_POST['action'])) {
     unset($_POST['action']);
-    print_r($_POST);
     if (isset($_FILES)) {
         $valid_extensions = array('jpeg', 'jpg', 'png', 'gif', 'bmp', 'pdf', 'doc', 'ppt');
         $img1 = $_FILES['c_photo']['name'];
@@ -34,23 +36,23 @@ if (isset($_POST['action'])) {
         }
         if ($_FILES['c_photo']['error'] == 0) {
             $_POST['c_photo'] = $path1;
-            move_uploaded_file($_FILES['c_photo']['tmp_name'], '../../images/customers/' . $path1);
+            move_uploaded_file($_FILES['c_photo']['tmp_name'], '../api/images/customers/' . $path1);
         }
         if ($_FILES['c_front_citizenship']['error'] == 0) {
             $_POST['c_front_citizenship'] = $path2;
-            move_uploaded_file($_FILES['c_front_citizenship']['tmp_name'], '../../images/customers/' . $path2);
+            move_uploaded_file($_FILES['c_front_citizenship']['tmp_name'], '../api/images/customers/' . $path2);
         }
         if ($_FILES['c_back_citizenship']['error'] == 0) {
             $_POST['c_back_citizenship'] = $path3;
-            move_uploaded_file($_FILES['c_back_citizenship']['tmp_name'], '../../images/customers/' . $path3);
+            move_uploaded_file($_FILES['c_back_citizenship']['tmp_name'], '../api/images/customers/' . $path3);
         }
         if ($_FILES['c_checkimage']['error'] == 0) {
             $_POST['c_checkimage'] = $final_image4;
-            move_uploaded_file($_FILES['c_checkimage']['tmp_name'], '../../images/customers/' . $final_image4);
+            move_uploaded_file($_FILES['c_checkimage']['tmp_name'], '../api/images/customers/' . $final_image4);
         }
         if ($_FILES['c_bankstatement']['error'] == 0) {
             $_POST['c_bankstatement'] = $final_image5;
-            move_uploaded_file($_FILES['c_bankstatement']['tmp_name'], '../../images/customers/' . $final_image5);
+            move_uploaded_file($_FILES['c_bankstatement']['tmp_name'], '../api/images/customers/' . $final_image5);
         }
     }
     $ins = $abc->save($_POST, 'c_id');

@@ -2,12 +2,21 @@
 require('../../db/connect.php');
 require './penaltycalculator.php';
 if (isset($_POST['id'])) {
-  $lid = $_POST['id'];
-  $dat2 = $pdo->query("SELECT * FROM customers c 
+    $lid = $_POST['id'];
+    $dat2 = $pdo->query("SELECT * FROM customers c 
             LEFT JOIN loans l ON c.c_id=l.l_c_id
             WHERE l.l_id ='$lid'")->fetch();
 
-  echo '<div class="row">
+    //this month collection
+    $tmc = $pdo->prepare("SELECT SUM(lt_principal) FROM loan_transactions WHERE month(lt_uploaddate) = :date");
+    $tmc->execute(['date' => date('m')]);
+    $tmc2 = $tmc->fetchAll();
+    $monthlycollected = $tmc2[0];
+
+    //this month estimated emi calculator collection
+    $loan = ($dat2['l_amount'] - $dat2['l_down_payment']) / $dat2['l_period'];
+
+    echo '<div class="row">
     <div class="col-xl-4 col-md-2 mb-4">
       <div class="card shadow h-30 py-2" style="background:#2a3f54;color:white;">
         <div class="card-body" style="color:white;">
@@ -43,7 +52,8 @@ if (isset($_POST['id'])) {
     <div class="col-xl-8 col-md-2 mb-4">
       <div class="card shadow h-100 py-2" style="background:white;">
         <div class="card-body" style="color:black;">
-          <div class="row no-gutters align-items-center">
+          <div class="row no-gutters">
+          <div class="col-xl-8 col-md-2 mb-4">
             <form enctype="multipart/form-data" id="payform" method="POST">
             <div class="col mr-2 form-group row">
                 <label for="total_amount" class="col-lg-7 col-form-label"><b>Total Description :</b></label>
@@ -57,6 +67,28 @@ if (isset($_POST['id'])) {
                   <input type="text" readonly class="form-control-plaintext" id="total_amount" value="' . $dat2['l_amount'] . '" style="width: 100%;">
                 </div>
               </div>
+              
+              <div class="col mr-2 form-group row">
+                <label for="total_amount" class="col-lg-7 col-form-label"><b>Loan period: </b></label>
+                <div class="col-sm-5">
+                  <input type="text" readonly class="form-control-plaintext" id="total_amount" value="' . $dat2['l_period'] . ' months" style="width: 100%;">
+                </div>
+              </div>
+
+            <div class="col mr-2 form-group row">
+                <label for="total_amount" class="col-lg-7 col-form-label"><b>Monthly Collected: </b></label>
+                <div class="col-sm-5">
+                  <input type="text" readonly class="form-control-plaintext font-weight-bold" id="total_amount" value="' . $monthlycollected[0] . '" style="width: 100%;">
+                </div>
+              </div>
+            
+              <div class="col mr-2 form-group row">
+                <label for="total_amount" class="col-lg-7 col-form-label"><b>Estimated Collection: </b></label>
+                <div class="col-sm-5">
+                  <input type="text" readonly class="form-control-plaintext text-success font-italic" id="total_amount" value="' . $loan . '" style="width: 100%;">
+                </div>
+              </div>
+
               <div class="col mr-2 form-group row">
                 <label for="total_amount" class="col-lg-7 col-form-label"><b>Remaining Payments (in Rs):</b></label>
                 <div class="col-sm-5">
@@ -88,10 +120,10 @@ if (isset($_POST['id'])) {
                 <label for="tender" class="col-lg-7 col-form-label"><b>Penalty (in Rs):</b></label>
                 <div class="col-sm-5">';
 
-  $pdamt = $dat2['l_amount'] - $dat2['l_remaining_loan'] - $dat2['l_down_payment'];
-  $penalty = pencalc($dat2['l_amount'], date_create(date('Y-m-d', strtotime($dat2['l_upload_date_time']))), $dat2['l_down_payment'], $pdamt, date_create(date('Y-m-d')), 0.16);
+    $pdamt = $dat2['l_amount'] - $dat2['l_remaining_loan'] - $dat2['l_down_payment'];
+    $penalty = pencalc($dat2['l_amount'], date_create(date('Y-m-d', strtotime($dat2['l_upload_date_time']))), $dat2['l_down_payment'], $pdamt, date_create(date('Y-m-d')), 0.16);
 
-  echo '<input type="number" name="lt_penalty" id="penalty_amount" value="' . round($penalty, 2) . '" class="form-control-plaintext" style="width: 100%;" required>
+    echo '<input type="number" name="lt_penalty" id="penalty_amount" value="' . round($penalty, 2) . '" class="form-control-plaintext" style="width: 100%;" required>
                 </div>
               </div>
               <div class="col mr-2 form-group row">
@@ -108,6 +140,12 @@ if (isset($_POST['id'])) {
 
             </form>
           </div>
+          <div class="col-xl-4 col-md-2">
+         
+          <button id="' . $dat2['l_id'] . '" class="btn btn-lg btn-outline-success showmodaloverview" style="margin-left:9rem"><i class="fas fa-balance-scale"></i></button>
+      
+          </div>
+          </div>
 
 
 
@@ -122,16 +160,16 @@ if (isset($_POST['id'])) {
           <div class="row no-gutters align-items-center">
             <div class="table-responsive">';
 
-  $asd = $pdo->query("SELECT * FROM loan_transactions lt
+    $asd = $pdo->query("SELECT * FROM loan_transactions lt
               LEFT JOIN customers c ON lt.c_id=c.c_id 
               INNER JOIN loans l ON lt.lt_l_id=l.l_id WHERE l.l_id='$lid'
               ");
-  $asd2 = $pdo->query("SELECT * FROM loans WHERE l_id='$lid'
+    $asd2 = $pdo->query("SELECT * FROM loans WHERE l_id='$lid'
               ");
-  $asdd2 = $asd2->fetch();
-  $rcasd2 = $asd2->rowCount();
+    $asdd2 = $asd2->fetch();
+    $rcasd2 = $asd2->rowCount();
 
-  echo '<table class="table table-bordered table-striped table-hover table-sm example2" id="example2" width="100%" cellspacing="0">
+    echo '<table class="table table-bordered table-striped table-hover table-sm example2" id="example2" width="100%" cellspacing="0">
                 <thead class="thead-dark">
                   <tr>
                     <th>#</th>
@@ -156,13 +194,13 @@ if (isset($_POST['id'])) {
 
                 </tfoot>';
 
-  if ($rcasd2 > 0) {
-    $vall =  intval($asdd2['l_down_payment']);
-  } else {
-    $vall = intval(0);
-  }
+    if ($rcasd2 > 0) {
+        $vall =  intval($asdd2['l_down_payment']);
+    } else {
+        $vall = intval(0);
+    }
 
-  echo '<tbody>
+    echo '<tbody>
                   <tr style="background:blanchedalmond;">
                     <td></td>
                     <td><b style="color:red;">Down Payment</b></td>
@@ -177,22 +215,22 @@ if (isset($_POST['id'])) {
                     </b>
 
                   </tr>';
-  $vv = 1;
-  foreach ($asd as $a) {
-    $s = $a['lt_uploaddate'];
+    $vv = 1;
+    foreach ($asd as $a) {
+        $s = $a['lt_uploaddate'];
 
-    echo '<tr>';
-    echo '<td>' . $vv . '</td>';
-    echo '<td>' . $s . '</td>';
-    echo '<td>' . $a['lt_principal'] . '</td>';
-    echo '<td>' . $a['lt_discount'] . '</td>';
-    echo '<td>' . $a['lt_interest'] . '</td>';
-    echo '<td>' . $a['lt_penalty'] . '</td>';
-    echo '<td>' . $a['lt_grand_total'] . '</td>';
-    echo '</tr>';
-    $vv++;
-  }
-  echo '</tbody>
+        echo '<tr>';
+        echo '<td>' . $vv . '</td>';
+        echo '<td>' . $s . '</td>';
+        echo '<td>' . $a['lt_principal'] . '</td>';
+        echo '<td>' . $a['lt_discount'] . '</td>';
+        echo '<td>' . $a['lt_interest'] . '</td>';
+        echo '<td>' . $a['lt_penalty'] . '</td>';
+        echo '<td>' . $a['lt_grand_total'] . '</td>';
+        echo '</tr>';
+        $vv++;
+    }
+    echo '</tbody>
 
               </table>
             </div>
@@ -204,27 +242,6 @@ if (isset($_POST['id'])) {
 }
 ?>
 <script type="text/javascript">
-  var principal = $("#principal").val();
-  var discount_amount = $("#discount_amount").val();
-  var interest_amount = $("#interest_amount").val();
-  var penalty_amount = $("#penalty_amount").val();
-  var gtotal = Number(principal) - Number(discount_amount) + Number(interest_amount) + Number(penalty_amount);
-  $("#grand_total").val(gtotal);
-
-  $("#principal").on("change keyup", function() {
-    var principal = $("#principal").val();
-    var discount_amount = $("#discount_amount").val();
-    var interest_amount = $("#interest_amount").val();
-    var penalty_amount = $("#penalty_amount").val();
-    var gtotal = Number(principal) - Number(discount_amount) + Number(interest_amount) + Number(penalty_amount);
-    $("#grand_total").val(gtotal);
-    var rempayment = $("#total_remaining_amount").val();
-    var diff = Number(rempayment) - Number(principal);
-    $("#total_new_remaining_amount").val(diff);
-
-  });
-
-  $("#discount_amount").on("change keyup", function() {
     var principal = $("#principal").val();
     var discount_amount = $("#discount_amount").val();
     var interest_amount = $("#interest_amount").val();
@@ -232,25 +249,46 @@ if (isset($_POST['id'])) {
     var gtotal = Number(principal) - Number(discount_amount) + Number(interest_amount) + Number(penalty_amount);
     $("#grand_total").val(gtotal);
 
-  });
+    $("#principal").on("change keyup", function() {
+        var principal = $("#principal").val();
+        var discount_amount = $("#discount_amount").val();
+        var interest_amount = $("#interest_amount").val();
+        var penalty_amount = $("#penalty_amount").val();
+        var gtotal = Number(principal) - Number(discount_amount) + Number(interest_amount) + Number(penalty_amount);
+        $("#grand_total").val(gtotal);
+        var rempayment = $("#total_remaining_amount").val();
+        var diff = Number(rempayment) - Number(principal);
+        $("#total_new_remaining_amount").val(diff);
 
-  $("#interest_amount").on("change keyup", function() {
-    var principal = $("#principal").val();
-    var discount_amount = $("#discount_amount").val();
-    var interest_amount = $("#interest_amount").val();
-    var penalty_amount = $("#penalty_amount").val();
-    var gtotal = Number(principal) - Number(discount_amount) + Number(interest_amount) + Number(penalty_amount);
-    $("#grand_total").val(gtotal);
+    });
 
-  });
+    $("#discount_amount").on("change keyup", function() {
+        var principal = $("#principal").val();
+        var discount_amount = $("#discount_amount").val();
+        var interest_amount = $("#interest_amount").val();
+        var penalty_amount = $("#penalty_amount").val();
+        var gtotal = Number(principal) - Number(discount_amount) + Number(interest_amount) + Number(penalty_amount);
+        $("#grand_total").val(gtotal);
 
-  $("#penalty_amount").on("change keyup", function() {
-    var principal = $("#principal").val();
-    var discount_amount = $("#discount_amount").val();
-    var interest_amount = $("#interest_amount").val();
-    var penalty_amount = $("#penalty_amount").val();
-    var gtotal = Number(principal) - Number(discount_amount) + Number(interest_amount) + Number(penalty_amount);
-    $("#grand_total").val(gtotal);
+    });
 
-  });
+    $("#interest_amount").on("change keyup", function() {
+        var principal = $("#principal").val();
+        var discount_amount = $("#discount_amount").val();
+        var interest_amount = $("#interest_amount").val();
+        var penalty_amount = $("#penalty_amount").val();
+        var gtotal = Number(principal) - Number(discount_amount) + Number(interest_amount) + Number(penalty_amount);
+        $("#grand_total").val(gtotal);
+
+    });
+
+    $("#penalty_amount").on("change keyup", function() {
+        var principal = $("#principal").val();
+        var discount_amount = $("#discount_amount").val();
+        var interest_amount = $("#interest_amount").val();
+        var penalty_amount = $("#penalty_amount").val();
+        var gtotal = Number(principal) - Number(discount_amount) + Number(interest_amount) + Number(penalty_amount);
+        $("#grand_total").val(gtotal);
+
+    });
 </script>

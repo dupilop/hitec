@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
                             'office' => $asd2['c_office'],
                             'dob' => $asd2['c_dob'],
                             'occupation' => $asd2['c_occupation'],
+                            'cid' => $asd2['c_id']
                         ]);
                     }
                 } else if ($data3['r_name'] == 'admin') {
