@@ -7,6 +7,7 @@ include './tokenverify.php';
 header('content-type: application/json');
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // $_POST = json_decode(file_get_contents("php://input"));
+    date_default_timezone_set("Asia/Kathmandu");
     $data = $_POST;
 
     $email = $data['email'];

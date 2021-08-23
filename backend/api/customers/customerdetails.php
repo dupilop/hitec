@@ -5,7 +5,9 @@ include '../libs/connect.php';
 // include '../../../classes/databasetable.php';
 require '../authentication/tokenverify.php';
 header('content-type: application/json');
+date_default_timezone_set("Asia/Kathmandu");
 if ($_SERVER['REQUEST_METHOD'] == "GET") {
+
     session_start();
     try {
         if (isset($_SERVER['HTTP_TOKEN']))
