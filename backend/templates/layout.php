@@ -247,6 +247,16 @@ $dat = $abc->fetch();
 
                                     </ul>
                                 </li>
+                                        <?php
+                                        if ($_SESSION['access_level'] == 'superadmin') {
+                                echo '<li><a href="accessmanagement"><i class="fa fa-bed" aria-hidden="true"></i>Bedtime Management</a>
+                                </li>
+                                    ';
+                                        }
+
+                                        ?>
+
+
                             </ul>
                         </div>
 

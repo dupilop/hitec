@@ -43,24 +43,17 @@ require './config.php';
                     <form action="" method="POST" id="form1">
                         <h1>Hitec Vision Pvt Ltd</h1>
                         <div>
+                            
                             <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Email<span class="required">*</span></label>
+                                <label class="col-form-label col-md-3 col-sm-3  label-align">OTP Code<span class="required">*</span></label>
                                 <div class="col-md-8 col-sm-8">
-                                    <input class="form-control" name="email" id="email" class='email' required="required" type="email" />
-
-                                </div>
-                                <div class="emailerror"></div>
-                            </div>
-                            <div class="field item form-group">
-                                <label class="col-form-label col-md-3 col-sm-3  label-align">Password<span class="required">*</span></label>
-                                <div class="col-md-8 col-sm-8">
-                                    <input class="form-control" type="password" id="password" name="password" title="Minimum 8 Characters Including An Upper And Lower Case Letter, A Number And A Unique Character" required />
+                                    <input class="form-control" type="number" id="otpcode" name="otpcode" required />
                                 </div>
                                 <div class="passerror"></div>
                             </div>
                             <div class="field item form-group">
                                 <div class="col-md-11 col-sm-8 relbtn">
-                                    <button type="button" name="login" id="login" style="float: right;" class="btn btn-outline-primary">Login</button><br>
+                                    <button type="button" name="login" id="login" style="float: right;" class="btn btn-outline-primary">Verify</button><br>
                                 </div>
                             </div>
                         </div>
@@ -128,62 +121,43 @@ require './config.php';
     $("#login").on("click", function(e) {
         e.preventDefault();
         $(".relbtn").html('<button type="button" name="login" id="login" style="float: right;" class="btn btn-outline-primary" disabled>Processing</button>');
-        var email = $("#email").val();
-        var password = $("#password").val();
-        var evalidation = false;
+        var otpcode = $("#otpcode").val();
+       
         var pvalidation = false;
-        if (!validateEmail(email)) {
-
-            $(".emailerror").html("<p class='text text-danger'>Email is invalid</p>");
-        } else {
-            if ($.trim(email) == '') {
-                $(".emailerror").html("<p class='text text-danger'>Email is invalid</p>");
-            } else {
-                $(".emailerror").html("<p class='text text-success'>Looks Good!</p>");
-                evalidation = true;
-            }
-        }
-        if ($.trim(password) == '') {
-            $(".passerror").html("<p class='text text-danger'>Password is empty</p>");
+       
+        if ($.trim(otpcode) == '') {
+            $(".passerror").html("<p class='text text-danger'>OTP is empty</p>");
         } else {
             $(".passerror").html("<p class='text text-success'></p>");
             pvalidation = true;
         }
-        if (evalidation == true && pvalidation == true) {
+        if (pvalidation == true) {
             var data = {
-                email: email,
-                password: password
+                otpcode: otpcode
             };
             // var data = JSON.stringify(data);
             $.ajax({
                 type: "POST",
                 url: adminlogin,
                 data: data,
+                headers: {
+                    "token": localStorage.getItem('token')
+                },
                 success: function(data) {
                     $(".relbtn").html('<button type="button" name="login" id="login" style="float: right;" class="btn btn-outline-primary" disabled><i class="fa fa-spinner fa-spin"></i> Logging in</button>');
-                    if (data.status == true && data.otp == false) {
+                    if (data.status === true) {
 
                         pb.clear();
                         pb.success('<i class="fa fa-sign-in" aria-hidden="true"></i> ' + data.message);
-                        localStorage.setItem('token', data.data.a_token);
+                        
                         setTimeout(function() {
                             window.location.href = 'backend/';
-                        }, 2000);
-                    } else if (data.status == false && data.otp == true) {
-                        pb.clear();
-                        pb.success('<i class="fa fa-sign-in" aria-hidden="true"></i> ' + data.message);
-                        localStorage.setItem('token', data.data.a_token);
-                        setTimeout(function() {
-                            window.location.href = './otpverify.php';
                         }, 2000);
                     } else {
                         $("#form1")[0].reset();
                         $(".relbtn").html('<button name="login" id="login" style="float: right;" class="btn btn-outline-primary">Login</button>');
                         pb.clear();
-                        if(data.errtype == 'sleepingmode')
-                        pb.error('<i class="fa fa-bed" aria-hidden="true"></i> ' + data.message);
-                        else
-                        pb.error('<i class="fa fa-sign-in" aria-hidden="true"></i> ' + data.message);
+                        pb.error('<i class="fa fa-sign-in" aria-hidden="true"></i>' + data.message);
                     }
 
                 },

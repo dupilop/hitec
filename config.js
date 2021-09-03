@@ -21,3 +21,4 @@
     var emioverviewcalculator = baseapiurl+'calculator/emioverviewcalculator.php';
     var loansettlementreport = baseapiurl+'reports/loansettlementreports.php';
     var loanreport = baseapiurl+'reports/loanreports.php';
+    var accessmanagement = baseapiurl+'authentication/accessmanagement.php';
